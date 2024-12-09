@@ -3,10 +3,6 @@ run-name: 'Create SDL release artifacts for ${{ inputs.commit }}'
 
 on:
   workflow_dispatch:
-    inputs:
-      commit:
-        description: 'Commit of SDL'
-        required: true
 
 jobs:
   src:
@@ -25,6 +21,8 @@ jobs:
         with:
           repository: 'libsdl-org/SDL'
           ref: 'release-2.30.10'
+          path: 'SDL'
+          fetch-depth: 0
 #      - name: 'Read json config'
       # todo
       - name: 'Build Source archive'
