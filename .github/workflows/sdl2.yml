@@ -1,0 +1,39 @@
+name: 'release'
+run-name: 'Create SDL release artifacts for ${{ inputs.commit }}'
+
+on:
+  push:
+    branches: [ $default-branch ]
+
+jobs:
+  src:
+    runs-on: ubuntu-latest
+    outputs:
+      project: ${{ steps.releaser.outputs.project }}
+      version: ${{ steps.releaser.outputs.version }}
+      src-zip: ${{ steps.releaser.outputs.src-zip }}
+    steps:
+      - name: 'Set up Python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 'Checkout SDL sources'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL'
+          ref: 'release-2.30.10'
+      - name: 'Build Source archive'
+        id: releaser
+        shell: bash
+        run: |
+          python build-scripts/build-release.py \
+            --actions source \
+            --commit ${{ inputs.commit }} \
+            --root "${{ github.workspace }}/SDL" \
+            --github \
+            --debug
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sources
+          path: '${{ github.workspace}}/dist'
