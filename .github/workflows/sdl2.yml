@@ -2,8 +2,11 @@ name: 'release'
 run-name: 'Create SDL release artifacts for ${{ inputs.commit }}'
 
 on:
-  push:
-    branches: [ $default-branch ]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Commit of SDL'
+        required: true
 
 jobs:
   src:
