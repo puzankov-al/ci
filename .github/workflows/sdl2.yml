@@ -25,13 +25,15 @@ jobs:
         with:
           repository: 'libsdl-org/SDL'
           ref: 'release-2.30.10'
+#      - name: 'Read json config'
+      # todo
       - name: 'Build Source archive'
         id: releaser
         shell: bash
         run: |
           python build-scripts/build-release.py \
             --actions source \
-            --commit ${{ inputs.commit }} \
+            --commit 9c821dc21ccbd69b2bda421fdb35cb4ae2da8f5e \
             --root "${{ github.workspace }}/SDL" \
             --github \
             --debug
