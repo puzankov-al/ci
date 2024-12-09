@@ -31,7 +31,7 @@ jobs:
         id: releaser
         shell: bash
         run: |
-          ls -l \
+          ls -l
           python build-scripts/build-release.py \
             --actions source \
             --commit 9c821dc21ccbd69b2bda421fdb35cb4ae2da8f5e \
