@@ -1,4 +1,4 @@
-name: 'release'
+name: 'sdl2'
 run-name: 'Create SDL release artifacts for ${{ inputs.commit }}'
 
 on:
@@ -7,15 +7,7 @@ on:
 jobs:
   msvc:
     runs-on: windows-latest
-#    outputs:
-#      project: ${{ steps.releaser.outputs.project }}
-#      version: ${{ steps.releaser.outputs.version }}
-#      src-zip: ${{ steps.releaser.outputs.src-zip }}
     steps:
-#      - name: 'Set up Python'
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: '3.11'
       - name: 'Checkout SDL sources'
         uses: actions/checkout@v4
         with:
@@ -41,8 +33,14 @@ jobs:
       - name: 'cmake install'
         shell: bash
         run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
+      - name: 'Publish artifacts'
+        uses: ncipollo/release-action@v1
         with:
-          name: windows
-          path: '${{ github.workspace}}/install'
+          artifacts: "install/*"
+          allowUpdates: true
+          name: 'release-2.30.10'
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: windows
+#          path: '${{ github.workspace}}/install'
