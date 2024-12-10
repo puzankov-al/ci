@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  src:
-    runs-on: ubuntu-latest
-    outputs:
-      project: ${{ steps.releaser.outputs.project }}
-      version: ${{ steps.releaser.outputs.version }}
-      src-zip: ${{ steps.releaser.outputs.src-zip }}
+  msvc:
+    runs-on: windows-latest
+#    outputs:
+#      project: ${{ steps.releaser.outputs.project }}
+#      version: ${{ steps.releaser.outputs.version }}
+#      src-zip: ${{ steps.releaser.outputs.src-zip }}
     steps:
       - name: 'Set up Python'
         uses: actions/setup-python@v5
@@ -21,23 +21,28 @@ jobs:
         with:
           repository: 'libsdl-org/SDL'
           ref: 'release-2.30.10'
-          path: 'SDL'
           fetch-depth: 0
-#      - name: 'Read json config'
-      # todo
-      - name: 'Build Source archive'
-        id: releaser
+      - name: 'cmake configure'
         shell: bash
         run: |
-          ls -l
-          python build-scripts/build-release.py \
-            --actions source \
-            --commit 9c821dc21ccbd69b2bda421fdb35cb4ae2da8f5e \
-            --root "${{ github.workspace }}/SDL" \
-            --github \
-            --debug
+          cmake -B build \
+               -DSDL_WERROR=ON \
+               -DSDL_STATIC=OFF \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -A x64 \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_BUILD_TYPE=Release
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --build build --config Release --parallel
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
           name: sources
-          path: '${{ github.workspace}}/dist'
+          path: '${{ github.workspace}}/install'
