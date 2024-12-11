@@ -16,11 +16,16 @@ jobs:
         with:
           path: 'config'
           sparse-checkout: 'sdl2/config.json'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
       - name: 'Checkout SDL sources'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
-          ref: 'release-2.30.10'
+          ref: ${{steps.json_properties.outputs.tag}}
           fetch-depth: 0
           path: 'source'
       - name: 'cmake configure'
@@ -45,5 +50,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-windows-release-2.30.10'
+          name: 'SDL2-windows-${{steps.json_properties.outputs.tag}}'
           path: '${{ github.workspace}}/install'
