@@ -139,8 +139,11 @@ jobs:
         id: setup-ndk
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r27
+          ndk-version: r27c
           local-cache: true
+      - name: 'verify'
+        shell: bash
+        run: ls -l /home/runner/.setup-ndk/r27/toolchains/llvm/prebuilt/linux-x86_64/bin/
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
