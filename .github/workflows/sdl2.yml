@@ -89,4 +89,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'SDL2-macos-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release/SDL2.framework'
+          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
