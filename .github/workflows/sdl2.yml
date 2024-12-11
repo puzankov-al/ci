@@ -92,7 +92,7 @@ jobs:
 #          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
 
   wasm:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: 'Setup Emscripten'
         uses: mymindstorm/setup-emsdk@v14
