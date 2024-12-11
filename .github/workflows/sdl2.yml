@@ -1,23 +1,32 @@
 name: 'sdl2'
-run-name: 'Create SDL release artifacts for ${{ inputs.commit }}'
+run-name: 'Create SDL release artifacts'
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - sdl2/**
 
 jobs:
   msvc:
     runs-on: windows-latest
     steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2/config.json'
       - name: 'Checkout SDL sources'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
           ref: 'release-2.30.10'
           fetch-depth: 0
+          path: 'package'
       - name: 'cmake configure'
         shell: bash
         run: |
-          cmake -B build \
+          cmake package -B build \
                -DSDL_WERROR=ON \
                -DSDL_STATIC=OFF \
                -DSDL_TEST=OFF \
@@ -29,18 +38,12 @@ jobs:
                -DCMAKE_BUILD_TYPE=Release
       - name: 'cmake build'
         shell: bash
-        run: cmake --build build --config Release --parallel
+        run: cmake package --build build --config Release --parallel
       - name: 'cmake install'
         shell: bash
-        run: cmake --install build --config Release
-      - name: 'Publish artifacts'
-        uses: ncipollo/release-action@v1
+        run: cmake package --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
         with:
-          artifacts: "install/*"
-          allowUpdates: true
-          name: 'release-2.30.10'
-#      - name: 'Store source archives'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: windows
-#          path: '${{ github.workspace}}/install'
+          name: 'SDL2-windows-release-2.30.10'
+          path: '${{ github.workspace}}/package/install'
