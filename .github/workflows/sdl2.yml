@@ -163,7 +163,7 @@ jobs:
         run: |
           cmake -S source -B build \
                -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}} \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
                -DCMAKE_INSTALL_PREFIX=install \
                -DANDROID_PLATFORM="29" \
                -DANDROID_ABI=${{ matrix.arch }} \
