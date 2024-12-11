@@ -22,11 +22,11 @@ jobs:
           repository: 'libsdl-org/SDL'
           ref: 'release-2.30.10'
           fetch-depth: 0
-          path: 'package'
+          path: 'source'
       - name: 'cmake configure'
         shell: bash
         run: |
-          cmake package -B build \
+          cmake -S source -B build \
                -DSDL_WERROR=ON \
                -DSDL_STATIC=OFF \
                -DSDL_TEST=OFF \
@@ -38,12 +38,12 @@ jobs:
                -DCMAKE_BUILD_TYPE=Release
       - name: 'cmake build'
         shell: bash
-        run: cmake package --build build --config Release --parallel
+        run: cmake --build build --config Release --parallel
       - name: 'cmake install'
         shell: bash
-        run: cmake package --install build --config Release
+        run: cmake --install build --config Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
           name: 'SDL2-windows-release-2.30.10'
-          path: '${{ github.workspace}}/package/install'
+          path: '${{ github.workspace}}/install'
