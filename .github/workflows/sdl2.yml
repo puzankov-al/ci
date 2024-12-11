@@ -118,7 +118,7 @@ jobs:
       - name: 'xcodebuild'
         shell: bash
         run: |
-          xcodebuild -project Xcode/SDL/SDL.xcodeproj -target 'xcFramework-iOS' -configuration Release
+          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'xcFramework-iOS' -configuration Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
