@@ -57,9 +57,51 @@ jobs:
 #          name: 'SDL2-windows-${{steps.config.outputs.tag}}'
 #          path: '${{ github.workspace}}/install'
 
-  macos:
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'repo tag'
+#        shell: bash
+#        run: |
+#          echo '${{steps.config.outputs.tag}}'
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'xcodebuild'
+#        shell: bash
+#        run: |
+#          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-macos-${{steps.config.outputs.tag}}'
+#          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
+
+  wasm:
     runs-on: macos-latest
     steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
+      - name: Verify
+        shell: bash
+        run: emcc -v
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -81,12 +123,26 @@ jobs:
           ref: ${{steps.config.outputs.tag}}
           fetch-depth: 0
           path: 'source'
-      - name: 'xcodebuild'
+      - name: 'cmake configure'
         shell: bash
         run: |
-          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
+          emcmake cmake -S source -B build \
+               -DSDL_WERROR=ON \
+               -DSDL_STATIC=ON \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_BUILD_TYPE=Release
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-macos-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
+          name: 'SDL2-wasm-${{steps.config.outputs.tag}}'
+          path: '${{ github.workspace}}/install'
