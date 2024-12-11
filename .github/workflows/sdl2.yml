@@ -21,11 +21,15 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2/config.json"
+      - name: 'repo tag'
+        shell: bash
+        run: |
+          echo '${{steps.config.outputs.tag}}'
       - name: 'Checkout SDL sources'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
-          ref: ${{steps.json_properties.outputs.tag}}
+          ref: ${{steps.config.outputs.tag}}
           fetch-depth: 0
           path: 'source'
       - name: 'cmake configure'
@@ -50,5 +54,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-windows-${{steps.json_properties.outputs.tag}}'
+          name: 'SDL2-windows-${{steps.config.outputs.tag}}'
           path: '${{ github.workspace}}/install'
