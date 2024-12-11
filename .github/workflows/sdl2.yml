@@ -8,10 +8,59 @@ on:
       - sdl2/**
 
 jobs:
-  msvc:
-    runs-on: windows-latest
+#  windows:
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'repo tag'
+#        shell: bash
+#        run: |
+#          echo '${{steps.config.outputs.tag}}'
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -DSDL_WERROR=ON \
+#               -DSDL_STATIC=OFF \
+#               -DSDL_TEST=OFF \
+#               -DSDL_TESTS=OFF \
+#               -DSDL_INSTALL_TESTS=OFF \
+#               -DSDL2_DISABLE_INSTALL=OFF \
+#               -A x64 \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_BUILD_TYPE=Release
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-windows-${{steps.config.outputs.tag}}'
+#          path: '${{ github.workspace}}/install'
+
+  macos:
+    runs-on: macos-latest
     steps:
-      - name: 'Checkout'
+      - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
           path: 'config'
@@ -25,34 +74,19 @@ jobs:
         shell: bash
         run: |
           echo '${{steps.config.outputs.tag}}'
-      - name: 'Checkout SDL sources'
+      - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
           ref: ${{steps.config.outputs.tag}}
           fetch-depth: 0
           path: 'source'
-      - name: 'cmake configure'
+      - name: 'xcodebuild'
         shell: bash
         run: |
-          cmake -S source -B build \
-               -DSDL_WERROR=ON \
-               -DSDL_STATIC=OFF \
-               -DSDL_TEST=OFF \
-               -DSDL_TESTS=OFF \
-               -DSDL_INSTALL_TESTS=OFF \
-               -DSDL2_DISABLE_INSTALL=OFF \
-               -A x64 \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
+          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-windows-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/install'
+          name: 'SDL2-macos-${{steps.config.outputs.tag}}'
+          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release/SDL2.framework'
