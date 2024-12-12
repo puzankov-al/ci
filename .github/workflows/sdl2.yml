@@ -1,5 +1,5 @@
 name: 'sdl2'
-run-name: 'Create SDL release artifacts'
+run-name: 'Build SDL2'
 
 on:
   workflow_dispatch:
