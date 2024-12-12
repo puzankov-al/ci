@@ -18,7 +18,7 @@ jobs:
       - name: 'Install SDL2'
         uses: libsdl-org/setup-sdl@main
         with:
-          cmake-generator: `Visual Studio 17 2022`
+          cmake-generator: Visual Studio 17 2022
           install-linux-dependencies: true
           version: 2-latest
           add-to-environment: true
