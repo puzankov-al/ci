@@ -72,15 +72,45 @@ jobs:
         with:
           name: 'SDL2-windows-${{steps.config.outputs.sdl_tag}}'
           path: '${{ github.workspace }}/sdl'
-      - name: Display structure of downloaded files
-        run: ls -R '${{ github.workspace }}/sdl'
-#      - name: 'Checkout source'
-#        uses: actions/checkout@v4
-#        with:
-#          repository: 'libsdl-org/SDL_image'
-#          ref: ${{steps.config.outputs.sdl_image_tag}}
-#          fetch-depth: 0
-#          path: 'source'
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_image'
+          ref: ${{steps.config.outputs.sdl_image_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+               -DSDL2IMAGE_VENDORED=ON \
+               -DBUILD_SHARED_LIBS=ON \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DSDL2IMAGE_BMP=OFF \
+               -DSDL2IMAGE_GIF=OFF \
+               -DSDL2IMAGE_LBM=OFF \
+               -DSDL2IMAGE_PCX=OFF \
+               -DSDL2IMAGE_PNM=OFF \
+               -DSDL2IMAGE_QOI=OFF \
+               -DSDL2IMAGE_TGA=OFF \
+               -DSDL2IMAGE_XCF=OFF \
+               -DSDL2IMAGE_XPM=OFF \
+               -DSDL2IMAGE_XV=OFF \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+               -G "Visual Studio 17 2022" \
+               -A x64
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_image-windows-${{steps.config.outputs.tag}}'
+          path: '${{ github.workspace}}/install'
 
 #  macos:
 #    runs-on: macos-latest
