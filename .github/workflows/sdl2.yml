@@ -79,6 +79,7 @@ jobs:
           ref: ${{steps.config.outputs.sdl_image_tag}}
           fetch-depth: 0
           path: 'source'
+          submodules: recursive
       - name: 'cmake configure'
         shell: bash
         run: |
@@ -141,6 +142,7 @@ jobs:
           ref: ${{steps.config.outputs.sdl_ttf_tag}}
           fetch-depth: 0
           path: 'source'
+          submodules: recursive
       - name: 'cmake configure'
         shell: bash
         run: |
