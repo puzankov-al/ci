@@ -8,7 +8,7 @@ on:
       - sdl2/**
 
 jobs:
-  windows:
+  windows_sdl:
     runs-on: windows-latest
     steps:
       - name: 'Checkout config'
@@ -21,15 +21,11 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2/config.json"
-      - name: 'repo tag'
-        shell: bash
-        run: |
-          echo '${{steps.config.outputs.tag}}'
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.tag}}
+          ref: ${{steps.config.outputs.sdl_tag}}
           fetch-depth: 0
           path: 'source'
       - name: 'cmake configure'
@@ -54,11 +50,12 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-windows-${{steps.config.outputs.tag}}'
+          name: 'SDL2-windows-${{steps.config.outputs.sdl_tag}}'
           path: '${{ github.workspace}}/install'
 
-  macos:
-    runs-on: macos-latest
+  windows_sdl_image:
+    needs: [windows_sdl]
+    runs-on: windows-latest
     steps:
       - name: 'Checkout config'
         uses: actions/checkout@v4
@@ -70,175 +67,187 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2/config.json"
-      - name: 'repo tag'
-        shell: bash
-        run: |
-          echo '${{steps.config.outputs.tag}}'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
+      - name: 'Download SDL'
+        uses: actions/download-artifact@v4
         with:
-          repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'xcodebuild'
-        shell: bash
-        run: |
-          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'SDL2-macos-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
+          name: 'SDL2-windows-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace }}/sdl'
+      - name: Display structure of downloaded files
+        run: ls -R '${{ github.workspace }}/sdl'
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL_image'
+#          ref: ${{steps.config.outputs.sdl_image_tag}}
+#          fetch-depth: 0
+#          path: 'source'
 
-  ios:
-    runs-on: macos-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2/config.json'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'repo tag'
-        shell: bash
-        run: |
-          echo '${{steps.config.outputs.tag}}'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'xcodebuild'
-        shell: bash
-        run: |
-          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'xcFramework-iOS' -configuration Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'SDL2-ios-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/source/Xcode/SDL/Products'
-
-  wasm:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Setup Emscripten'
-        uses: mymindstorm/setup-emsdk@v14
-        with:
-          version: 3.1.62
-          actions-cache-folder: 'emsdk-cache'
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2/config.json'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'repo tag'
-        shell: bash
-        run: |
-          echo '${{steps.config.outputs.tag}}'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          emcmake cmake -S source -B build \
-               -DSDL_WERROR=ON \
-               -DSDL_STATIC=ON \
-               -DSDL_TEST=OFF \
-               -DSDL_TESTS=OFF \
-               -DSDL_INSTALL_TESTS=OFF \
-               -DSDL2_DISABLE_INSTALL=OFF \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'SDL2-wasm-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/install'
-
-  android:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Setup NDK'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27c
-          local-cache: true
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2/config.json'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'repo tag'
-        shell: bash
-        run: |
-          echo '${{steps.config.outputs.tag}}'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DANDROID_PLATFORM="29" \
-               -DANDROID_ABI=${{ matrix.arch }} \
-               -DSDL_WERROR=OFF \
-               -DSDL_TEST=OFF \
-               -DSDL_TESTS=OFF \
-               -DSDL_STATIC=OFF \
-               -DSDL_INSTALL_TESTS=OFF \
-               -DSDL2_DISABLE_INSTALL=OFF \
-               -G Ninja
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'SDL2-android-${{ matrix.arch }}-${{steps.config.outputs.tag}}'
-          path: '${{ github.workspace}}/install'
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.sdl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'xcodebuild'
+#        shell: bash
+#        run: |
+#          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-macos-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
+#
+#  ios:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.sdl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'xcodebuild'
+#        shell: bash
+#        run: |
+#          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'xcFramework-iOS' -configuration Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-ios-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace}}/source/Xcode/SDL/Products'
+#
+#  wasm:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: 'Setup Emscripten'
+#        uses: mymindstorm/setup-emsdk@v14
+#        with:
+#          version: 3.1.62
+#          actions-cache-folder: 'emsdk-cache'
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.sdl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          emcmake cmake -S source -B build \
+#               -DSDL_WERROR=ON \
+#               -DSDL_STATIC=ON \
+#               -DSDL_TEST=OFF \
+#               -DSDL_TESTS=OFF \
+#               -DSDL_INSTALL_TESTS=OFF \
+#               -DSDL2_DISABLE_INSTALL=OFF \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_BUILD_TYPE=Release
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-wasm-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  android:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Setup NDK'
+#        id: setup-ndk
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: r27c
+#          local-cache: true
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2/config.json'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.sdl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DANDROID_PLATFORM="29" \
+#               -DANDROID_ABI=${{ matrix.arch }} \
+#               -DSDL_WERROR=OFF \
+#               -DSDL_TEST=OFF \
+#               -DSDL_TESTS=OFF \
+#               -DSDL_STATIC=OFF \
+#               -DSDL_INSTALL_TESTS=OFF \
+#               -DSDL2_DISABLE_INSTALL=OFF \
+#               -G Ninja
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'SDL2-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace}}/install'
