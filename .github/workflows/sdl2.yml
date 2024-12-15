@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: 'config'
-          sparse-checkout: 'sdl2/config.json'
+          sparse-checkout: 'sdl2'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -171,45 +171,106 @@ jobs:
       - name: 'cmake install'
         shell: bash
         run: cmake --install build --config Release
-      - name: 'Move include dir'
-        shell: bash
-        run: mv '${{ github.workspace}}/install/include/SDL2' '${{ github.workspace}}/install/SDL2_ttf'
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
           name: 'sdl2_ttf-windows-${{steps.config.outputs.sdl_ttf_tag}}'
           path: '${{ github.workspace}}/install'
 
-#  macos:
-#    runs-on: macos-latest
-#    steps:
-#      - name: 'Checkout config'
-#        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'sdl2/config.json'
-#      - name: 'read config.json'
-#        id: config
-#        uses: ActionsTools/read-json-action@main
-#        with:
-#          file_path: "config/sdl2/config.json"
-#      - name: 'Checkout source'
-#        uses: actions/checkout@v4
-#        with:
-#          repository: 'libsdl-org/SDL'
-#          ref: ${{steps.config.outputs.sdl_tag}}
-#          fetch-depth: 0
-#          path: 'source'
-#      - name: 'xcodebuild'
-#        shell: bash
-#        run: |
-#          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
-#      - name: 'Store source archives'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: 'SDL2-macos-${{steps.config.outputs.sdl_tag}}'
-#          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
-#
+  macos_sdl:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL'
+          ref: ${{steps.config.outputs.sdl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'xcodebuild'
+        shell: bash
+        run: |
+          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2-macos-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace}}/source/Xcode/SDL/build/Release'
+
+  macos_sdl_image:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_image'
+          ref: ${{steps.config.outputs.sdl_image_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          ARCHIVE_PATH="$(pwd)/SDL2_image.xcarchive"
+          xcodebuild archive -project Xcode/SDL_image.xcodeproj -scheme 'Framework' -configuration Release -sdk macosx -archivePath $ARCHIVE_PATH
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_image-macos-${{steps.config.outputs.sdl_image_tag}}'
+          path: '${{ github.workspace}}/source/Products/Library/Frameworks'
+
+  macos_sdl_ttf:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_ttf'
+          ref: ${{steps.config.outputs.sdl_ttf_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          ARCHIVE_PATH="$(pwd)/SDL2_image.xcarchive"
+          xcodebuild archive -project Xcode/SDL_ttf.xcodeproj -scheme 'Framework' -configuration Release -sdk macosx -archivePath $ARCHIVE_PATH
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_ttf-macos-${{steps.config.outputs.sdl_ttf_tag}}'
+          path: '${{ github.workspace}}/source/Products/Library/Frameworks'
+
 #  ios:
 #    runs-on: macos-latest
 #    steps:
@@ -217,7 +278,7 @@ jobs:
 #        uses: actions/checkout@v4
 #        with:
 #          path: 'config'
-#          sparse-checkout: 'sdl2/config.json'
+#          sparse-checkout: 'sdl2'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
@@ -252,7 +313,7 @@ jobs:
 #        uses: actions/checkout@v4
 #        with:
 #          path: 'config'
-#          sparse-checkout: 'sdl2/config.json'
+#          sparse-checkout: 'sdl2'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
@@ -309,7 +370,7 @@ jobs:
 #        uses: actions/checkout@v4
 #        with:
 #          path: 'config'
-#          sparse-checkout: 'sdl2/config.json'
+#          sparse-checkout: 'sdl2'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
