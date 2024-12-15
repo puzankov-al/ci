@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e52d048..cae58d7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -96,7 +96,7 @@ add_library(SDL2_ttf
+ add_library(SDL2_ttf::${sdl2_ttf_export_name} ALIAS SDL2_ttf)
+ target_include_directories(SDL2_ttf PUBLIC
+     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
++    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+ )
+ target_compile_definitions(SDL2_ttf PRIVATE
+     BUILD_SDL
+@@ -294,7 +294,7 @@ if(SDL2TTF_INSTALL)
+     )
+     install(FILES
+         "${CMAKE_CURRENT_SOURCE_DIR}/SDL_ttf.h"
+-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2" COMPONENT devel
++        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2_ttf" COMPONENT devel
+     )
+ 
+     if(INSTALL_EXTRA_TARGETS)
