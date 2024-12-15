@@ -362,6 +362,9 @@ jobs:
                      -sdk iphonesimulator \
                      -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
           
+          mkdir source/include
+          cp source/SDL_ttf.h source/include
+          
           xcodebuild -create-xcframework \
                      -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
                      -headers source/include \
