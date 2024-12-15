@@ -1,0 +1,21 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 65a8811..446d76a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -227,7 +227,6 @@ add_library(SDL2_image::${sdl2_image_export_name} ALIAS SDL2_image)
+ target_include_directories(SDL2_image PUBLIC
+     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
+ )
+ target_compile_definitions(SDL2_image PRIVATE
+     BUILD_SDL
+@@ -741,7 +740,7 @@ if(SDL2IMAGE_INSTALL)
+     )
+     install(
+         FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL_image.h"
+-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2" COMPONENT DEVEL
++        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2_image" COMPONENT DEVEL
+     )
+ 
+     if(INSTALL_EXTRA_TARGETS)
