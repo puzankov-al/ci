@@ -83,6 +83,9 @@ jobs:
       - name: 'Patch SDL2_image'
         shell: bash
         run: 'git apply config/sdl2/sdl2_image.patch'
+      - name: 'diff SDL2_image'
+        shell: bash
+        run: 'git diff'
       - name: 'cmake configure'
         shell: bash
         run: |
