@@ -8,174 +8,174 @@ on:
       - sdl2/**
 
 jobs:
-  windows_sdl:
-    runs-on: windows-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.sdl_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -DSDL_WERROR=ON \
-               -DSDL_STATIC=OFF \
-               -DSDL_TEST=OFF \
-               -DSDL_TESTS=OFF \
-               -DSDL_INSTALL_TESTS=OFF \
-               -DSDL2_DISABLE_INSTALL=OFF \
-               -A x64 \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  windows_sdl_image:
-    needs: [windows_sdl]
-    runs-on: windows-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'Download SDL'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
-          path: '${{ github.workspace }}/sdl'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL_image'
-          ref: ${{steps.config.outputs.sdl_image_tag}}
-          fetch-depth: 0
-          path: 'source'
-          submodules: recursive
-      - name: 'Patch SDL2_image'
-        shell: bash
-        run: 'cd source && git apply ../config/sdl2/sdl2_image.patch'
-      - name: 'diff SDL2_image'
-        shell: bash
-        run: 'cd source && git diff'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -DSDL2IMAGE_VENDORED=ON \
-               -DBUILD_SHARED_LIBS=ON \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DSDL2IMAGE_BMP=OFF \
-               -DSDL2IMAGE_GIF=OFF \
-               -DSDL2IMAGE_LBM=OFF \
-               -DSDL2IMAGE_PCX=OFF \
-               -DSDL2IMAGE_PNM=OFF \
-               -DSDL2IMAGE_QOI=OFF \
-               -DSDL2IMAGE_TGA=OFF \
-               -DSDL2IMAGE_XCF=OFF \
-               -DSDL2IMAGE_XPM=OFF \
-               -DSDL2IMAGE_XV=OFF \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
-               -G "Visual Studio 17 2022" \
-               -A x64
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'sdl2_image-windows-${{steps.config.outputs.sdl_image_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  windows_sdl_ttf:
-    needs: [windows_sdl]
-    runs-on: windows-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
-      - name: 'Download SDL'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
-          path: '${{ github.workspace }}/sdl'
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL_ttf'
-          ref: ${{steps.config.outputs.sdl_ttf_tag}}
-          fetch-depth: 0
-          path: 'source'
-          submodules: recursive
-      - name: 'Patch SDL2_ttf'
-        shell: bash
-        run: 'cd source && git apply ../config/sdl2/sdl2_ttf.patch'
-      - name: 'diff SDL2_ttf'
-        shell: bash
-        run: 'cd source && git diff'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -DBUILD_SHARED_LIBS=ON \
-               -DSDL2TTF_HARFBUZZ=ON \
-               -DSDL2TTF_SAMPLES=OFF \
-               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
-               -G "Visual Studio 17 2022" \
-               -A x64
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'sdl2_ttf-windows-${{steps.config.outputs.sdl_ttf_tag}}'
-          path: '${{ github.workspace}}/install'
+#  windows_sdl:
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL'
+#          ref: ${{steps.config.outputs.sdl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -DSDL_WERROR=ON \
+#               -DSDL_STATIC=OFF \
+#               -DSDL_TEST=OFF \
+#               -DSDL_TESTS=OFF \
+#               -DSDL_INSTALL_TESTS=OFF \
+#               -DSDL2_DISABLE_INSTALL=OFF \
+#               -A x64 \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_BUILD_TYPE=Release
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  windows_sdl_image:
+#    needs: [windows_sdl]
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Download SDL'
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace }}/sdl'
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL_image'
+#          ref: ${{steps.config.outputs.sdl_image_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#          submodules: recursive
+#      - name: 'Patch SDL2_image'
+#        shell: bash
+#        run: 'cd source && git apply ../config/sdl2/sdl2_image.patch'
+#      - name: 'diff SDL2_image'
+#        shell: bash
+#        run: 'cd source && git diff'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -DSDL2IMAGE_VENDORED=ON \
+#               -DBUILD_SHARED_LIBS=ON \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DSDL2IMAGE_BMP=OFF \
+#               -DSDL2IMAGE_GIF=OFF \
+#               -DSDL2IMAGE_LBM=OFF \
+#               -DSDL2IMAGE_PCX=OFF \
+#               -DSDL2IMAGE_PNM=OFF \
+#               -DSDL2IMAGE_QOI=OFF \
+#               -DSDL2IMAGE_TGA=OFF \
+#               -DSDL2IMAGE_XCF=OFF \
+#               -DSDL2IMAGE_XPM=OFF \
+#               -DSDL2IMAGE_XV=OFF \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+#               -G "Visual Studio 17 2022" \
+#               -A x64
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'sdl2_image-windows-${{steps.config.outputs.sdl_image_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  windows_sdl_ttf:
+#    needs: [windows_sdl]
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Download SDL'
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: 'sdl2-windows-${{steps.config.outputs.sdl_tag}}'
+#          path: '${{ github.workspace }}/sdl'
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL_ttf'
+#          ref: ${{steps.config.outputs.sdl_ttf_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#          submodules: recursive
+#      - name: 'Patch SDL2_ttf'
+#        shell: bash
+#        run: 'cd source && git apply ../config/sdl2/sdl2_ttf.patch'
+#      - name: 'diff SDL2_ttf'
+#        shell: bash
+#        run: 'cd source && git diff'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -DBUILD_SHARED_LIBS=ON \
+#               -DSDL2TTF_HARFBUZZ=ON \
+#               -DSDL2TTF_SAMPLES=OFF \
+#               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+#               -G "Visual Studio 17 2022" \
+#               -A x64
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'sdl2_ttf-windows-${{steps.config.outputs.sdl_ttf_tag}}'
+#          path: '${{ github.workspace}}/install'
 
   macos_sdl:
     runs-on: macos-latest
@@ -200,7 +200,9 @@ jobs:
       - name: 'xcodebuild'
         shell: bash
         run: |
-          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj -target 'Framework' -configuration Release
+          xcodebuild -project source/Xcode/SDL/SDL.xcodeproj \
+                     -target 'Framework' \
+                     -configuration Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
@@ -231,8 +233,12 @@ jobs:
       - name: 'xcode build'
         shell: bash
         run: |
-          ARCHIVE_PATH="$(pwd)/SDL2_image.xcarchive"
-          xcodebuild archive -project Xcode/SDL_image.xcodeproj -scheme 'Framework' -configuration Release -sdk macosx -archivePath $ARCHIVE_PATH
+          xcodebuild archive \
+                     -project source/Xcode/SDL_image.xcodeproj \
+                     -scheme 'Framework' \
+                     -configuration Release \
+                     -sdk macosx \
+                     -archivePath "$(pwd)/source/SDL2_image.xcarchive"
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
@@ -263,8 +269,12 @@ jobs:
       - name: 'xcode build'
         shell: bash
         run: |
-          ARCHIVE_PATH="$(pwd)/SDL2_image.xcarchive"
-          xcodebuild archive -project Xcode/SDL_ttf.xcodeproj -scheme 'Framework' -configuration Release -sdk macosx -archivePath $ARCHIVE_PATH
+          xcodebuild archive \
+                     -project source/Xcode/SDL_ttf.xcodeproj \
+                     -scheme 'Framework' \
+                     -configuration Release \
+                     -sdk macosx \
+                     -archivePath "$(pwd)/source/SDL2_image.xcarchive"
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
