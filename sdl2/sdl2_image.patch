@@ -20,7 +20,7 @@ index 65a8811..446d76a 100644
  
      if(INSTALL_EXTRA_TARGETS)
 diff --git a/include/SDL_image.h b/include/SDL_image.h
-index 138fcbf..fda91dc 100644
+index 138fcbf..c4345fb 100644
 --- a/include/SDL_image.h
 +++ b/include/SDL_image.h
 @@ -29,9 +29,9 @@
@@ -41,6 +41,6 @@ index 138fcbf..fda91dc 100644
  }
  #endif
 -#include "close_code.h"
-+#include <<SDL2/close_code.h>
++#include <SDL2/close_code.h>
  
  #endif /* SDL_IMAGE_H_ */
