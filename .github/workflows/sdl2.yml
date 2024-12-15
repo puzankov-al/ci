@@ -372,7 +372,7 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_image-macos-${{steps.config.outputs.sdl_image_tag}}'
+          name: 'sdl2_image-ios-${{steps.config.outputs.sdl_image_tag}}'
           path: '${{ github.workspace}}/install/xcframework'
 
   ios_sdl_ttf:
@@ -437,7 +437,7 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_ttf-macos-${{steps.config.outputs.sdl_ttf_tag}}'
+          name: 'sdl2_ttf-ios-${{steps.config.outputs.sdl_ttf_tag}}'
           path: '${{ github.workspace}}/install/xcframework'
 
 #  wasm:
