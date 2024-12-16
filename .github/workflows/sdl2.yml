@@ -670,6 +670,9 @@ jobs:
           ref: ${{steps.config.outputs.sdl_tag}}
           fetch-depth: 0
           path: 'source'
+      - name: 'clang version'
+        shell: bash
+        run: '/home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version'
       - name: 'cmake configure'
         shell: bash
         run: |
@@ -743,6 +746,9 @@ jobs:
       - name: 'diff SDL2_image'
         shell: bash
         run: 'cd source && git diff'
+      - name: 'clang version'
+        shell: bash
+        run: '/home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version'
       - name: 'cmake configure'
         shell: bash
         run: |
@@ -825,6 +831,9 @@ jobs:
       - name: 'diff SDL2_ttf'
         shell: bash
         run: 'cd source && git diff'
+      - name: 'clang version'
+        shell: bash
+        run: '/home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version'
       - name: 'cmake configure'
         shell: bash
         run: |
