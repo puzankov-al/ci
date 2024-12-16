@@ -680,7 +680,7 @@ jobs:
           ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64
           ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin
           ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
-          /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang-18 --version
+          /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version
       - name: 'cmake configure'
         shell: bash
         run: |
@@ -756,7 +756,15 @@ jobs:
         run: 'cd source && git diff'
       - name: 'clang version'
         shell: bash
-        run: '/home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version'
+        run: |
+          ls -l /home/runner/.setup-ndk/r27c
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
+          /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version
       - name: 'cmake configure'
         shell: bash
         run: |
@@ -841,7 +849,15 @@ jobs:
         run: 'cd source && git diff'
       - name: 'clang version'
         shell: bash
-        run: '/home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version'
+        run: |
+          ls -l /home/runner/.setup-ndk/r27c
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin
+          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
+          /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version
       - name: 'cmake configure'
         shell: bash
         run: |
