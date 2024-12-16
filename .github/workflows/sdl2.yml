@@ -699,6 +699,7 @@ jobs:
           path: '${{ github.workspace}}/install'
 
   android_sdl_image:
+    needs: [android_sdl]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -780,6 +781,7 @@ jobs:
 
 
   android_sdl_ttf:
+    needs: [android_sdl]
     runs-on: ubuntu-latest
     strategy:
       matrix:
