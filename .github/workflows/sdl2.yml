@@ -652,7 +652,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27c
-          local-cache: true
+#          local-cache: true
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -725,7 +725,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27c
-          local-cache: true
+#          local-cache: true
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -818,7 +818,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27c
-          local-cache: true
+#          local-cache: true
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
