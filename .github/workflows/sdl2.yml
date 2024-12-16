@@ -3,9 +3,6 @@ run-name: 'Build SDL2'
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - sdl2/**
 
 jobs:
   windows_sdl:
