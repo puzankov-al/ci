@@ -735,6 +735,7 @@ jobs:
           ref: ${{steps.config.outputs.sdl_image_tag}}
           fetch-depth: 0
           path: 'source'
+          submodules: recursive
       - name: 'Patch SDL2_image'
         shell: bash
         run: 'cd source && git apply ../config/sdl2/sdl2_image.patch'
@@ -816,6 +817,7 @@ jobs:
           ref: ${{steps.config.outputs.sdl_ttf_tag}}
           fetch-depth: 0
           path: 'source'
+          submodules: recursive
       - name: 'Patch SDL2_ttf'
         shell: bash
         run: 'cd source && git apply ../config/sdl2/sdl2_ttf.patch'
