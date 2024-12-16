@@ -673,14 +673,7 @@ jobs:
       - name: 'clang version'
         shell: bash
         run: |
-          ls -l /home/runner/.setup-ndk/r27c
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin
-          ls -l /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
-          /home/runner/.setup-ndk/r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --version
+          ls -l ${{steps.setup-ndk.outputs.ndk-path}}
       - name: 'cmake configure'
         shell: bash
         run: |
