@@ -310,7 +310,7 @@ jobs:
 #      - name: 'Store source archives'
 #        uses: actions/upload-artifact@v4
 #        with:
-#          name: 'SDL2-ios-${{steps.config.outputs.sdl_tag}}'
+#          name: 'sdl2-ios-${{steps.config.outputs.sdl_tag}}'
 #          path: '${{ github.workspace}}/source/Xcode/SDL/Products'
 
 #  ios_sdl_image:
@@ -486,7 +486,7 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2-wasm-${{steps.config.outputs.sdl_tag}}'
+          name: 'sdl2-wasm-${{steps.config.outputs.sdl_tag}}'
           path: '${{ github.workspace}}/install'
 
   wasm_sdl_image:
@@ -557,7 +557,7 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2_image-wasm-${{steps.config.outputs.sdl_tag}}'
+          name: 'sdl2_image-wasm-${{steps.config.outputs.sdl_tag}}'
           path: '${{ github.workspace}}/install'
 
   wasm_sdl_ttf:
@@ -621,7 +621,7 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SDL2_ttf-wasm-${{steps.config.outputs.sdl_tag}}'
+          name: 'sdl2_ttf-wasm-${{steps.config.outputs.sdl_tag}}'
           path: '${{ github.workspace}}/install'
 
 #  android:
@@ -682,5 +682,5 @@ jobs:
 #      - name: 'Store source archives'
 #        uses: actions/upload-artifact@v4
 #        with:
-#          name: 'SDL2-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_tag}}'
+#          name: 'sdl2-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_tag}}'
 #          path: '${{ github.workspace}}/install'
