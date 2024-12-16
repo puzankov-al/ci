@@ -448,6 +448,10 @@ jobs:
         with:
           version: 3.1.62
           actions-cache-folder: 'emsdk-cache'
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -476,7 +480,8 @@ jobs:
                -DSDL_INSTALL_TESTS=OFF \
                -DSDL2_DISABLE_INSTALL=OFF \
                -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release
+               -DCMAKE_BUILD_TYPE=Release \
+               -G Ninja
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
@@ -498,6 +503,10 @@ jobs:
         with:
           version: 3.1.62
           actions-cache-folder: 'emsdk-cache'
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -569,6 +578,10 @@ jobs:
         with:
           version: 3.1.62
           actions-cache-folder: 'emsdk-cache'
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
