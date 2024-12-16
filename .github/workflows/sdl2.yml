@@ -313,9 +313,141 @@ jobs:
 #          name: 'SDL2-ios-${{steps.config.outputs.sdl_tag}}'
 #          path: '${{ github.workspace}}/source/Xcode/SDL/Products'
 
-  ios_sdl_image:
-    runs-on: macos-latest
+#  ios_sdl_image:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL_image'
+#          ref: ${{steps.config.outputs.sdl_image_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#          submodules: recursive
+#      - name: 'Patch SDL2_image'
+#        shell: bash
+#        run: 'cd source && git apply ../config/sdl2/sdl2_image.patch'
+#      - name: 'diff SDL2_image'
+#        shell: bash
+#        run: 'cd source && git diff'
+#      - name: 'xcode build'
+#        shell: bash
+#        run: |
+#          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphoneos.xcarchive"
+#          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphonesimulator.xcarchive"
+#
+#          # todo: Framework schema compilation is broken for iphonesimulator
+#          xcodebuild archive \
+#                     -project source/Xcode/SDL_image.xcodeproj \
+#                     -scheme 'Static Library' \
+#                     -configuration Release \
+#                     -sdk iphoneos \
+#                     -archivePath $IPHONEOS_ARCHIVE_PATH
+#
+#          xcodebuild archive \
+#                     PLATFORM=iOS \
+#                     -project source/Xcode/SDL_image.xcodeproj \
+#                     -scheme 'Static Library' \
+#                     -configuration Release \
+#                     -sdk iphonesimulator \
+#                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
+#
+#          xcodebuild -create-xcframework \
+#                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
+#                     -headers source/include \
+#                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
+#                     -headers source/include \
+#                     -output install/xcframework/SDL2_image.xcframework
+#
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'sdl2_image-ios-${{steps.config.outputs.sdl_image_tag}}'
+#          path: '${{ github.workspace}}/install/xcframework'
+#
+#  ios_sdl_ttf:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'sdl2'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/sdl2/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'libsdl-org/SDL_ttf'
+#          ref: ${{steps.config.outputs.sdl_ttf_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#          submodules: recursive
+#      - name: 'Patch SDL2_ttf'
+#        shell: bash
+#        run: 'cd source && git apply ../config/sdl2/sdl2_ttf.patch'
+#      - name: 'diff SDL2_ttf'
+#        shell: bash
+#        run: 'cd source && git diff'
+#      - name: 'xcode build'
+#        shell: bash
+#        run: |
+#          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_ttf-iphoneos.xcarchive"
+#          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_ttf-iphonesimulator.xcarchive"
+#
+#          # todo: Framework schema compilation is broken for iphonesimulator
+#          xcodebuild archive \
+#                     -project source/Xcode/SDL_ttf.xcodeproj \
+#                     -scheme 'Static Library' \
+#                     -configuration Release \
+#                     -sdk iphoneos \
+#                     -archivePath $IPHONEOS_ARCHIVE_PATH
+#
+#          xcodebuild archive \
+#                     PLATFORM=iOS \
+#                     -project source/Xcode/SDL_ttf.xcodeproj \
+#                     -scheme 'Static Library' \
+#                     -configuration Release \
+#                     -sdk iphonesimulator \
+#                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
+#
+#          mkdir source/include
+#          cp source/SDL_ttf.h source/include
+#
+#          xcodebuild -create-xcframework \
+#                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_ttf.a" \
+#                     -headers source/include \
+#                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_ttf.a" \
+#                     -headers source/include \
+#                     -output install/xcframework/SDL2_ttf.xcframework
+#
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'sdl2_ttf-ios-${{steps.config.outputs.sdl_ttf_tag}}'
+#          path: '${{ github.workspace}}/install/xcframework'
+
+  wasm_sdl:
+    runs-on: ubuntu-latest
     steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -326,6 +458,61 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL'
+          ref: ${{steps.config.outputs.sdl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          emcmake cmake -S source -B build \
+               -DSDL_WERROR=ON \
+               -DSDL_STATIC=ON \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_BUILD_TYPE=Release
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'SDL2-wasm-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace}}/install'
+
+  wasm_sdl_image:
+    needs: [wasm_sdl]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
+      - name: 'Download SDL'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2-wasm-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace }}/sdl'
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
@@ -340,44 +527,48 @@ jobs:
       - name: 'diff SDL2_image'
         shell: bash
         run: 'cd source && git diff'
-      - name: 'xcode build'
+      - name: 'cmake configure'
         shell: bash
         run: |
-          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphoneos.xcarchive"
-          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphonesimulator.xcarchive"
-          
-          # todo: Framework schema compilation is broken for iphonesimulator
-          xcodebuild archive \
-                     -project source/Xcode/SDL_image.xcodeproj \
-                     -scheme 'Static Library' \
-                     -configuration Release \
-                     -sdk iphoneos \
-                     -archivePath $IPHONEOS_ARCHIVE_PATH
-          
-          xcodebuild archive \
-                     PLATFORM=iOS \
-                     -project source/Xcode/SDL_image.xcodeproj \
-                     -scheme 'Static Library' \
-                     -configuration Release \
-                     -sdk iphonesimulator \
-                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
-          
-          xcodebuild -create-xcframework \
-                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
-                     -headers source/include \
-                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
-                     -headers source/include \
-                     -output install/xcframework/SDL2_image.xcframework
-
+          emcmake cmake -S source -B build \
+               -DSDL2IMAGE_VENDORED=ON \
+               -DBUILD_SHARED_LIBS=OFF \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DSDL2IMAGE_BMP=OFF \
+               -DSDL2IMAGE_GIF=OFF \
+               -DSDL2IMAGE_LBM=OFF \
+               -DSDL2IMAGE_PCX=OFF \
+               -DSDL2IMAGE_PNM=OFF \
+               -DSDL2IMAGE_QOI=OFF \
+               -DSDL2IMAGE_TGA=OFF \
+               -DSDL2IMAGE_XCF=OFF \
+               -DSDL2IMAGE_XPM=OFF \
+               -DSDL2IMAGE_XV=OFF \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
+               -G Ninja
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_image-ios-${{steps.config.outputs.sdl_image_tag}}'
-          path: '${{ github.workspace}}/install/xcframework'
+          name: 'SDL2_image-wasm-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace}}/install'
 
-  ios_sdl_ttf:
-    runs-on: macos-latest
+  wasm_sdl_ttf:
+    needs: [wasm_sdl]
+    runs-on: ubuntu-latest
     steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -388,6 +579,11 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2/config.json"
+      - name: 'Download SDL'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2-wasm-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace }}/sdl'
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
@@ -402,93 +598,32 @@ jobs:
       - name: 'diff SDL2_ttf'
         shell: bash
         run: 'cd source && git diff'
-      - name: 'xcode build'
+      - name: 'cmake configure'
         shell: bash
         run: |
-          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_ttf-iphoneos.xcarchive"
-          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_ttf-iphonesimulator.xcarchive"
-
-          # todo: Framework schema compilation is broken for iphonesimulator
-          xcodebuild archive \
-                     -project source/Xcode/SDL_ttf.xcodeproj \
-                     -scheme 'Static Library' \
-                     -configuration Release \
-                     -sdk iphoneos \
-                     -archivePath $IPHONEOS_ARCHIVE_PATH
-          
-          xcodebuild archive \
-                     PLATFORM=iOS \
-                     -project source/Xcode/SDL_ttf.xcodeproj \
-                     -scheme 'Static Library' \
-                     -configuration Release \
-                     -sdk iphonesimulator \
-                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
-          
-          mkdir source/include
-          cp source/SDL_ttf.h source/include
-          
-          xcodebuild -create-xcframework \
-                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_ttf.a" \
-                     -headers source/include \
-                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_ttf.a" \
-                     -headers source/include \
-                     -output install/xcframework/SDL2_ttf.xcframework
-
+          emcmake cmake -S source -B build \
+               -DBUILD_SHARED_LIBS=OFF \
+               -DSDL2TTF_VENDORED=ON \
+               -DSDL2TTF_HARFBUZZ=ON \
+               -DSDL2TTF_SAMPLES=OFF \
+               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
+               -G Ninja
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_ttf-ios-${{steps.config.outputs.sdl_ttf_tag}}'
-          path: '${{ github.workspace}}/install/xcframework'
+          name: 'SDL2_ttf-wasm-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace}}/install'
 
-#  wasm:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: 'Setup Emscripten'
-#        uses: mymindstorm/setup-emsdk@v14
-#        with:
-#          version: 3.1.62
-#          actions-cache-folder: 'emsdk-cache'
-#      - name: 'Checkout config'
-#        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'sdl2'
-#      - name: 'read config.json'
-#        id: config
-#        uses: ActionsTools/read-json-action@main
-#        with:
-#          file_path: "config/sdl2/config.json"
-#      - name: 'Checkout source'
-#        uses: actions/checkout@v4
-#        with:
-#          repository: 'libsdl-org/SDL'
-#          ref: ${{steps.config.outputs.sdl_tag}}
-#          fetch-depth: 0
-#          path: 'source'
-#      - name: 'cmake configure'
-#        shell: bash
-#        run: |
-#          emcmake cmake -S source -B build \
-#               -DSDL_WERROR=ON \
-#               -DSDL_STATIC=ON \
-#               -DSDL_TEST=OFF \
-#               -DSDL_TESTS=OFF \
-#               -DSDL_INSTALL_TESTS=OFF \
-#               -DSDL2_DISABLE_INSTALL=OFF \
-#               -DCMAKE_INSTALL_PREFIX=install \
-#               -DCMAKE_BUILD_TYPE=Release
-#      - name: 'cmake build'
-#        shell: bash
-#        run: cmake --build build --config Release --parallel
-#      - name: 'cmake install'
-#        shell: bash
-#        run: cmake --install build --config Release
-#      - name: 'Store source archives'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: 'SDL2-wasm-${{steps.config.outputs.sdl_tag}}'
-#          path: '${{ github.workspace}}/install'
-#
 #  android:
 #    runs-on: ubuntu-latest
 #    strategy:
