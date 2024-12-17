@@ -234,6 +234,11 @@ jobs:
           ref: ${{steps.config.outputs.fmt_tag}}
           fetch-depth: 0
           path: 'source'
+      - name: 'ios-cmake'
+        shell: bash
+        run: |
+          ls -l
+          ls -l ios-cmake
       - name: 'cmake configure'
         shell: bash
         run: |
