@@ -1,0 +1,36 @@
+name: 'threadpool'
+run-name: 'Build threadpool'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  common:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'threadpool'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/threadpool/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'bshoshany/thread-pool'
+          ref: ${{steps.config.outputs.threadpool_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          mv source/include install
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'threadpool-${{steps.config.outputs.threadpool_tag}}'
+          path: '${{ github.workspace}}/install'
