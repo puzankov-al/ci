@@ -246,7 +246,7 @@ jobs:
                -GXcode \
                -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_INSTALL_PREFIX="install-iphone" \
-               -DCMAKE_TOOLCHAIN_FILE=ios-cmake/ios.toolchain.cmake \
+               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
                -DPLATFORM=OS64 \
                -DFMT_DOC=OFF \
                -DFMT_TEST=OFF
@@ -259,7 +259,7 @@ jobs:
                -GXcode \
                -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
-               -DCMAKE_TOOLCHAIN_FILE=ios-cmake/ios.toolchain.cmake \
+               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
                -DPLATFORM=SIMULATOR64 \
                -DFMT_DOC=OFF \
                -DFMT_TEST=OFF
@@ -272,7 +272,7 @@ jobs:
                -GXcode \
                -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
-               -DCMAKE_TOOLCHAIN_FILE=ios-cmake/ios.toolchain.cmake \
+               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
                -DPLATFORM=SIMULATORARM64 \
                -DFMT_DOC=OFF \
                -DFMT_TEST=OFF
