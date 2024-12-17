@@ -5,207 +5,207 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows:
-    runs-on: windows-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'fmt'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/fmt/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'fmtlib/fmt'
-          ref: ${{steps.config.outputs.fmt_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -A x64 \
-               -DCMAKE_CXX_STANDARD=20 \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'fmt-windows-${{steps.config.outputs.fmt_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  wasm:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Setup Emscripten'
-        uses: mymindstorm/setup-emsdk@v14
-        with:
-          version: 3.1.62
-          actions-cache-folder: 'emsdk-cache'
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'fmt'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/fmt/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'fmtlib/fmt'
-          ref: ${{steps.config.outputs.fmt_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          emcmake cmake -S source -B build \
-               -GNinja \
-               -DCMAKE_CXX_STANDARD=20 \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'fmt-wasm-${{steps.config.outputs.fmt_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  android:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Setup NDK'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27c
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'fmt'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/fmt/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'fmtlib/fmt'
-          ref: ${{steps.config.outputs.fmt_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -GNinja \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DANDROID_PLATFORM="29" \
-               -DANDROID_ABI=${{ matrix.arch }} \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'fmt-android-${{ matrix.arch }}-${{steps.config.outputs.fmt_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  macos:
-    runs-on: macos-latest
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'fmt'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/fmt/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'fmtlib/fmt'
-          ref: ${{steps.config.outputs.fmt_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -GNinja \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Create xcframework'
-        shell: bash
-        run: |
-          xcodebuild -create-xcframework \
-                     -library install/lib/libfmt.a \
-                     -headers install/include \
-                     -output install/xcframework/fmt.xcframework \
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'fmt-macos-${{steps.config.outputs.fmt_tag}}'
-          path: '${{ github.workspace}}/install/xcframework'
+#  windows:
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'fmt'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/fmt/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'fmtlib/fmt'
+#          ref: ${{steps.config.outputs.fmt_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -A x64 \
+#               -DCMAKE_CXX_STANDARD=20 \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DFMT_DOC=OFF \
+#               -DFMT_TEST=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'fmt-windows-${{steps.config.outputs.fmt_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  wasm:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Setup Emscripten'
+#        uses: mymindstorm/setup-emsdk@v14
+#        with:
+#          version: 3.1.62
+#          actions-cache-folder: 'emsdk-cache'
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'fmt'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/fmt/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'fmtlib/fmt'
+#          ref: ${{steps.config.outputs.fmt_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          emcmake cmake -S source -B build \
+#               -GNinja \
+#               -DCMAKE_CXX_STANDARD=20 \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DFMT_DOC=OFF \
+#               -DFMT_TEST=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'fmt-wasm-${{steps.config.outputs.fmt_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  android:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Setup NDK'
+#        id: setup-ndk
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: r27c
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'fmt'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/fmt/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'fmtlib/fmt'
+#          ref: ${{steps.config.outputs.fmt_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -GNinja \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DANDROID_PLATFORM="29" \
+#               -DANDROID_ABI=${{ matrix.arch }} \
+#               -DFMT_DOC=OFF \
+#               -DFMT_TEST=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'fmt-android-${{ matrix.arch }}-${{steps.config.outputs.fmt_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'fmt'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/fmt/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'fmtlib/fmt'
+#          ref: ${{steps.config.outputs.fmt_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -GNinja \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+#               -DFMT_DOC=OFF \
+#               -DFMT_TEST=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Create xcframework'
+#        shell: bash
+#        run: |
+#          xcodebuild -create-xcframework \
+#                     -library install/lib/libfmt.a \
+#                     -headers install/include \
+#                     -output install/xcframework/fmt.xcframework \
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'fmt-macos-${{steps.config.outputs.fmt_tag}}'
+#          path: '${{ github.workspace}}/install/xcframework'
 
   ios:
     runs-on: macos-latest
