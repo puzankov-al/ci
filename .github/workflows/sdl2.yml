@@ -236,8 +236,6 @@ jobs:
                      -configuration Release \
                      -sdk macosx \
                      -destination 'generic/platform=macOS' \
-                     -arch arm64 \
-                     -arch x86_64 \
                      -archivePath "${{ github.workspace}}/SDL2_image.xcarchive"
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
