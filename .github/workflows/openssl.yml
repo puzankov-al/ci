@@ -18,7 +18,7 @@ jobs:
           Write-Host (get-command perl).Path;
           Write-Host $env:path;
       - name: 'Setup perl dependencies'
-        shell: bash
+        shell: pwsh
         run: cpan -f -i Text::Template
       - name: 'Setup NASM'
         uses: ilammy/setup-nasm@v1
