@@ -13,10 +13,10 @@ jobs:
         with:
           perl-version: "5.38"
       - name: 'prl'
-        shell: bash
+        shell: pwsh
         run: |
-          which perl
-          echo $PATH
+          Write-Host (get-command perl).Path;
+          Write-Host $env:path;
       - name: 'Setup perl dependencies'
         shell: bash
         run: cpan -f -i Text::Template
