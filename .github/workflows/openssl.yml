@@ -46,12 +46,13 @@ jobs:
         working-directory: build
         shell: pwsh
         run: nmake
+      - name: 'mkdir install'
+        shell: bash
+        run: mkdir install
       - name: 'install'
         working-directory: build
-        shell: bash
-        run: |
-          mkdir install
-          nmake install DESTDIR=install
+        shell: pwsh
+        run: nmake install DESTDIR=../install
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
