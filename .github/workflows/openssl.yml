@@ -12,11 +12,6 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: "5.38"
-      - name: 'prl'
-        shell: pwsh
-        run: |
-          Write-Host (get-command perl).Path;
-          Write-Host $env:path;
       - name: 'Setup perl dependencies'
         shell: pwsh
         run: cpan -f -i Text::Template
@@ -44,12 +39,12 @@ jobs:
         run: mkdir build
       - name: 'configure'
         working-directory: build
-        shell: bash
+        shell: pwsh
         run: |
           perl ../source/Configure VC-WIN64A
       - name: 'build'
         working-directory: build
-        shell: bash
+        shell: pwsh
         run: nmake
       - name: 'install'
         working-directory: build
