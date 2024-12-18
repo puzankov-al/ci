@@ -12,6 +12,11 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: "5.38"
+      - name: 'prl'
+        shell: bash
+        run: |
+          which perl
+          echo $PATH
       - name: 'Setup perl dependencies'
         shell: bash
         run: cpan -f -i Text::Template
