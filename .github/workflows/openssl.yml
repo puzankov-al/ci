@@ -1,0 +1,48 @@
+name: 'openssl'
+run-name: 'Build openssl'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: 'Setup Perl'
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.38"
+      - name: 'Setup NASM'
+        uses: ilammy/setup-nasm@v1
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'openssl'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/openssl/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'openssl/openssl'
+          ref: ${{steps.config.outputs.openssl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'configure'
+        shell: bash
+        run: |
+          cd source && perl Configure VC-WIN64A
+      - name: 'build'
+        shell: bash
+        run: cd source && nmake
+      - name: 'install'
+        shell: bash
+        run: cd source && nmake install
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'openssl-windows-${{steps.config.outputs.openssl_tag}}'
+#          path: '${{ github.workspace}}/install'
