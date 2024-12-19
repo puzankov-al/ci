@@ -111,8 +111,8 @@ jobs:
         run: |
           export ANDROID_NDK_ROOT=${{steps.setup-ndk.outputs.ndk-path}}
           PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-          ../source/Configure android-${{ matrix.arch }} -D__ANDROID_API__=29
-          make PREFIX=../install
+          ../source/Configure android-${{ matrix.arch }} -D__ANDROID_API__=29 --prefix=../install
+          make
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
