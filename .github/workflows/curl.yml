@@ -87,7 +87,7 @@ jobs:
         shell: pwsh
         run: |
           $url = "";
-          switch (${{ matrix.arch }}) {
+          switch ("${{ matrix.arch }}") {
             "armeabi-v7a" { $url = '${{steps.config.outputs.openssl_android_armeabi-v7a_url}}' }
             "arm64-v8a" { $url = '${{steps.config.outputs.openssl_android_arm64-v8a_url}}' }
             "x86" { $url = '${{steps.config.outputs.openssl_android_x86_url}}' }
