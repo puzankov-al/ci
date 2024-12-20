@@ -41,7 +41,7 @@ jobs:
                 -G 'Visual Studio 17 2022' \
                 -A x64 \
                 -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_OPENSSL=ON
+                -DCURL_USE_OPENSSL=ON \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
