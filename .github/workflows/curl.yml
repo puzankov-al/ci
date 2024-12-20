@@ -94,7 +94,7 @@ jobs:
             "x86_64" { $url = '${{steps.config.outputs.openssl_android_x86_64_url}}' }
           }
           $arch = '${{ matrix.arch }}';
-          $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertTo-Json;
+          $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertFrom-Json -AsHashtable;
           
           Write-Host $urls;
           Write-Host $urls['${{ matrix.arch }}'];
