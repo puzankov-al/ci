@@ -126,55 +126,55 @@ jobs:
 #          name: 'curl-android-${{ matrix.arch }}-${{steps.config.outputs.curl_tag}}'
 #          path: '${{ github.workspace}}/install'
 
-  macos:
-    runs-on: macos-latest
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'curl'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/curl/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'curl/curl'
-          ref: ${{steps.config.outputs.curl_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-                -GNinja \
-                -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=install \
-                -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_SECTRANSP=ON \
-                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
-                -DUSE_NGHTTP2=OFF \
-                -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'curl-macos-${{steps.config.outputs.curl_tag}}'
-          path: '${{ github.workspace}}/install'
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'curl'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/curl/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'curl/curl'
+#          ref: ${{steps.config.outputs.curl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#                -GNinja \
+#                -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_INSTALL_PREFIX=install \
+#                -DBUILD_CURL_EXE=OFF \
+#                -DCURL_USE_SECTRANSP=ON \
+#                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+#                -DUSE_NGHTTP2=OFF \
+#                -DCURL_USE_LIBSSH2=OFF \
+#                -DUSE_LIBIDN2=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'curl-macos-${{steps.config.outputs.curl_tag}}'
+#          path: '${{ github.workspace}}/install'
 
   ios:
     runs-on: macos-latest
