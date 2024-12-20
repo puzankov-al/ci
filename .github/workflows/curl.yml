@@ -61,18 +61,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-#        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
-        arch: [ 'x86_64' ]
+        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
+#        arch: [ 'x86_64' ]
     steps:
-#      - name: 'Setup Ninja'
-#        uses: ashutoshvarma/setup-ninja@master
-#        with:
-#          version: 1.12.1
-#      - name: 'Setup NDK'
-#        id: setup-ndk
-#        uses: nttld/setup-ndk@v1
-#        with:
-#          ndk-version: r27c
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -86,50 +86,41 @@ jobs:
       - name: 'Fetch OpenSSL'
         shell: pwsh
         run: |
-          $url = "";
-          switch ("${{ matrix.arch }}") {
-            "armeabi-v7a" { $url = '${{steps.config.outputs.openssl_android_armeabi-v7a_url}}' }
-            "arm64-v8a" { $url = '${{steps.config.outputs.openssl_android_arm64-v8a_url}}' }
-            "x86" { $url = '${{steps.config.outputs.openssl_android_x86_url}}' }
-            "x86_64" { $url = '${{steps.config.outputs.openssl_android_x86_64_url}}' }
-          }
-          $arch = '${{ matrix.arch }}';
           $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertFrom-Json -AsHashtable;
-          
-          Write-Host $urls;
-          Write-Host $urls['${{ matrix.arch }}'];
-#          Invoke-WebRequest $url -OutFile ./openssl.zip;
-#          Expand-Archive -Path openssl.zip;
-#      - name: 'Checkout source'
-#        uses: actions/checkout@v4
-#        with:
-#          repository: 'curl/curl'
-#          ref: ${{steps.config.outputs.curl_tag}}
-#          fetch-depth: 0
-#          path: 'source'
-#      - name: 'cmake configure'
-#        shell: bash
-#        run: |
-#          cmake -S source -B build \
-#               -GNinja \
-#               -DCMAKE_BUILD_TYPE=Release \
-#               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-#               -DCMAKE_INSTALL_PREFIX=install \
-#               -DANDROID_PLATFORM="29" \
-#               -DANDROID_ABI=${{ matrix.arch }} \
-#               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
-#               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
-#               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE \
-#               -DBUILD_CURL_EXE=OFF \
-#               -DCURL_USE_OPENSSL=ON
-#      - name: 'cmake build'
-#        shell: bash
-#        run: cmake --build build --config Release --parallel
-#      - name: 'cmake install'
-#        shell: bash
-#        run: cmake --install build --config Release
-#      - name: 'Store source archives'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: 'curl-android-${{ matrix.arch }}-${{steps.config.outputs.curl_tag}}'
-#          path: '${{ github.workspace}}/install'
+          $url = $urls['${{ matrix.arch }}'];
+          Write-Host $url;
+          Invoke-WebRequest $url -OutFile ./openssl.zip;
+          Expand-Archive -Path openssl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'curl/curl'
+          ref: ${{steps.config.outputs.curl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+               -GNinja \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DANDROID_PLATFORM="29" \
+               -DANDROID_ABI=${{ matrix.arch }} \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
+               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE \
+               -DBUILD_CURL_EXE=OFF \
+               -DCURL_USE_OPENSSL=ON
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'curl-android-${{ matrix.arch }}-${{steps.config.outputs.curl_tag}}'
+          path: '${{ github.workspace}}/install'
