@@ -64,15 +64,15 @@ jobs:
 #        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
         arch: [ 'x86_64' ]
     steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Setup NDK'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27c
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Setup NDK'
+#        id: setup-ndk
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: r27c
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
