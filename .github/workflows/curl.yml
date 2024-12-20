@@ -122,7 +122,8 @@ jobs:
                -DANDROID_PLATFORM="29" \
                -DANDROID_ABI=${{ matrix.arch }} \
                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
-               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
+               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE \
                -DBUILD_CURL_EXE=OFF \
                -DCURL_USE_OPENSSL=ON
       - name: 'cmake build'
