@@ -96,7 +96,7 @@ jobs:
           $arch = '${{ matrix.arch }}';
           $urls = '${{ steps.config.outputs.openssl_android_url }}';
           
-          Write-Host "${{steps.config.outputs.openssl_android_url['matrix.arch']}};"
+          Write-Host "${{steps.config.outputs.openssl_android_url[matrix.arch]}};"
           Write-Host $url;
           Invoke-WebRequest $url -OutFile ./openssl.zip;
           Expand-Archive -Path openssl.zip;
