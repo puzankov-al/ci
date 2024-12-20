@@ -218,7 +218,6 @@ jobs:
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
                 -DUSE_LIBIDN2=OFF
-          
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
@@ -236,6 +235,8 @@ jobs:
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
                 -DUSE_LIBIDN2=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build --config Release
           
           rm -r build
           
@@ -251,6 +252,8 @@ jobs:
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
                 -DUSE_LIBIDN2=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build --config Release
           
           cp -r 'install-iphonesimulator64' 'install-iphonesimulator'
           
