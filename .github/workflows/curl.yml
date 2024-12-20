@@ -94,20 +94,12 @@ jobs:
             "x86_64" { $url = '${{steps.config.outputs.openssl_android_x86_64_url}}' }
           }
           $arch = '${{ matrix.arch }}';
-          $urls = '${{ steps.config.outputs.openssl_android_url }}';
+          $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertTo-Json;
           
-          Write-Host "${{steps.config.outputs.openssl_android_url[matrix.arch]}};"
-          Write-Host $url;
-          Invoke-WebRequest $url -OutFile ./openssl.zip;
-          Expand-Archive -Path openssl.zip;
-      - name: 'check openssl'
-        shell: bash
-        run: |
-          ls -l ${{ github.workspace }}
-          ls -l ${{ github.workspace }}/openssl
-          ls -l ${{ github.workspace }}/openssl/lib
-          ls -l ${{ github.workspace }}/openssl/lib/cmake
-          ls -l ${{ github.workspace }}/openssl/lib/cmake/OpenSSL
+          Write-Host $urls;
+          Write-Host $urls['${{ matrix.arch }}'];
+#          Invoke-WebRequest $url -OutFile ./openssl.zip;
+#          Expand-Archive -Path openssl.zip;
 #      - name: 'Checkout source'
 #        uses: actions/checkout@v4
 #        with:
