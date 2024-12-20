@@ -1,4 +1,8 @@
 {
   "curl_tag": "curl-8_11_1",
-  "openssl_win_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-windows-openssl-3.4.0.zip"
+  "openssl_win_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-windows-openssl-3.4.0.zip",
+  "openssl_android_armeabi-v7a_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-android-arm-openssl-3.4.0.zip",
+  "openssl_android_arm64-v8a_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-android-arm64-openssl-3.4.0.zip",
+  "openssl_android_x86_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-android-x86-openssl-3.4.0.zip",
+  "openssl_android_x86_64_url": "https://github.com/puzankov-al/ci/releases/download/openssl-3.4.0/openssl-android-x86_64-openssl-3.4.0.zip"
 }
