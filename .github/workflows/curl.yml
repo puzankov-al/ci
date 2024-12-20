@@ -96,6 +96,14 @@ jobs:
           Write-Host $url;
           Invoke-WebRequest $url -OutFile ./openssl.zip;
           Expand-Archive -Path openssl.zip;
+      - name: 'check openssl'
+        shell: bash
+        run: |
+          ls -l ${{ github.workspace }}
+          ls -l ${{ github.workspace }}/openssl
+          ls -l ${{ github.workspace }}/openssl/lib
+          ls -l ${{ github.workspace }}/openssl/lib/cmake
+          ls -l ${{ github.workspace }}/openssl/lib/cmake/OpenSSL
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
