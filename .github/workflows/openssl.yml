@@ -105,14 +105,18 @@ jobs:
         run: |
           mkdir build
           mkdir install
-      - name: 'build'
+      - name: 'configure'
         working-directory: build
         shell: bash
         run: |
           export ANDROID_NDK_ROOT=${{steps.setup-ndk.outputs.ndk-path}}
           PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
           ../source/Configure android-${{ matrix.arch }} -D__ANDROID_API__=29 --prefix=${{ github.workspace}}/install
-          make
+      - name: 'build'
+        working-directory: install
+        shell: bash
+        run: |
+          make -C ../build
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
