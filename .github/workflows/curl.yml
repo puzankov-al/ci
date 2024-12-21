@@ -9,122 +9,122 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows:
-    runs-on: windows-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'curl'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/curl/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'curl/curl'
-          ref: ${{steps.config.outputs.curl_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-                -G 'Visual Studio 17 2022' \
-                -A x64 \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=install \
-                -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_SCHANNEL=ON \
-                -DCURL_DEFAULT_SSL_BACKEND='schannel' \
-                -DUSE_NGHTTP2=OFF \
-                -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'curl-windows-${{steps.config.outputs.curl_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  android:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
-#        arch: [ 'x86_64' ]
-    steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
-      - name: 'Setup NDK'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27c
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'curl'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/curl/config.json"
-      - name: 'Fetch OpenSSL'
-        shell: pwsh
-        run: |
-          $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertFrom-Json -AsHashtable;
-          $url = $urls['${{ matrix.arch }}'];
-          Write-Host $url;
-          Invoke-WebRequest $url -OutFile ./openssl.zip;
-          Expand-Archive -Path openssl.zip;
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'curl/curl'
-          ref: ${{steps.config.outputs.curl_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-               -GNinja \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DANDROID_PLATFORM="29" \
-               -DANDROID_ABI=${{ matrix.arch }} \
-               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
-               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
-               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE \
-               -DBUILD_CURL_EXE=OFF \
-               -DCURL_USE_OPENSSL=ON \
-               -DUSE_NGHTTP2=OFF \
-               -DCURL_USE_LIBSSH2=OFF \
-               -DUSE_LIBIDN2=OFF
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'curl-android-${{ matrix.arch }}-${{steps.config.outputs.curl_tag}}'
-          path: '${{ github.workspace}}/install'
+#  windows:
+#    runs-on: windows-latest
+#    steps:
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'curl'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/curl/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'curl/curl'
+#          ref: ${{steps.config.outputs.curl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#                -G 'Visual Studio 17 2022' \
+#                -A x64 \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_INSTALL_PREFIX=install \
+#                -DBUILD_CURL_EXE=OFF \
+#                -DCURL_USE_SCHANNEL=ON \
+#                -DCURL_DEFAULT_SSL_BACKEND='schannel' \
+#                -DUSE_NGHTTP2=OFF \
+#                -DCURL_USE_LIBSSH2=OFF \
+#                -DUSE_LIBIDN2=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'curl-windows-${{steps.config.outputs.curl_tag}}'
+#          path: '${{ github.workspace}}/install'
+#
+#  android:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
+##        arch: [ 'x86_64' ]
+#    steps:
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
+#      - name: 'Setup NDK'
+#        id: setup-ndk
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: r27c
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'curl'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/curl/config.json"
+#      - name: 'Fetch OpenSSL'
+#        shell: pwsh
+#        run: |
+#          $urls = '${{ steps.config.outputs.openssl_android_url }}' | ConvertFrom-Json -AsHashtable;
+#          $url = $urls['${{ matrix.arch }}'];
+#          Write-Host $url;
+#          Invoke-WebRequest $url -OutFile ./openssl.zip;
+#          Expand-Archive -Path openssl.zip;
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'curl/curl'
+#          ref: ${{steps.config.outputs.curl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#               -GNinja \
+#               -DCMAKE_BUILD_TYPE=Release \
+#               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+#               -DCMAKE_INSTALL_PREFIX=install \
+#               -DANDROID_PLATFORM="29" \
+#               -DANDROID_ABI=${{ matrix.arch }} \
+#               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/openssl/lib/cmake/OpenSSL' \
+#               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+#               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=TRUE \
+#               -DBUILD_CURL_EXE=OFF \
+#               -DCURL_USE_OPENSSL=ON \
+#               -DUSE_NGHTTP2=OFF \
+#               -DCURL_USE_LIBSSH2=OFF \
+#               -DUSE_LIBIDN2=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config Release --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config Release
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'curl-android-${{ matrix.arch }}-${{steps.config.outputs.curl_tag}}'
+#          path: '${{ github.workspace}}/install'
 
   macos:
     runs-on: macos-latest
@@ -156,6 +156,7 @@ jobs:
           cmake -S source -B build \
                 -GNinja \
                 -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DBUILD_CURL_EXE=OFF \
@@ -185,106 +186,109 @@ jobs:
           name: 'curl-macos-${{steps.config.outputs.curl_tag}}'
           path: '${{ github.workspace}}/install/xcframework'
 
-  ios:
-    runs-on: macos-latest
-    steps:
-      - name: 'Setup iOS toolchain'
-        uses: actions/checkout@v4
-        with:
-          repository: 'leetal/ios-cmake'
-          ref: '4.5.0'
-          path: 'ios-cmake'
-          sparse-checkout: 'ios.toolchain.cmake'
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'curl'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/curl/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'curl/curl'
-          ref: ${{steps.config.outputs.curl_tag}}
-          fetch-depth: 0
-          path: 'source'
-      - name: 'cmake configure'
-        shell: bash
-        run: |
-          cmake -S source -B build \
-                -GXcode \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX="install-iphone" \
-                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-                -DPLATFORM=OS64 \
-                -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_SECTRANSP=ON \
-                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
-                -DUSE_NGHTTP2=OFF \
-                -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF \
-                -DBUILD_STATIC_LIBS=ON \
-                -DBUILD_SHARED_LIBS=OFF
-          cmake --build build --config Release --parallel
-          cmake --install build --config Release
-
-          rm -r build
-
-          cmake -S source -B build \
-                -GXcode \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
-                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-                -DPLATFORM=SIMULATOR64 \
-                -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_SECTRANSP=ON \
-                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
-                -DUSE_NGHTTP2=OFF \
-                -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF \
-                -DBUILD_STATIC_LIBS=ON \
-                -DBUILD_SHARED_LIBS=OFF
-          cmake --build build --config Release --parallel
-          cmake --install build --config Release
-
-          rm -r build
-
-          cmake -S source -B build \
-                -GXcode \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
-                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-                -DPLATFORM=SIMULATORARM64 \
-                -DBUILD_CURL_EXE=OFF \
-                -DCURL_USE_SECTRANSP=ON \
-                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
-                -DUSE_NGHTTP2=OFF \
-                -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF \
-                -DBUILD_STATIC_LIBS=ON \
-                -DBUILD_SHARED_LIBS=OFF
-          cmake --build build --config Release --parallel
-          cmake --install build --config Release
-
-          cp -r 'install-iphonesimulator64' 'install-iphonesimulator'
-
-          lipo \
-            install-iphonesimulator64/lib/libcurl.a \
-            install-iphonesimulatorarm64/lib/libcurl.a \
-            -create -output install-iphonesimulator/lib/libcurl.a
-
-          xcodebuild -create-xcframework \
-            -library install-iphonesimulator/lib/libcurl.a \
-            -headers install-iphonesimulator/include \
-            -library install-iphone/lib/libcurl.a \
-            -headers install-iphone/include \
-            -output install/xcframework/curl.xcframework
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'curl-ios-${{steps.config.outputs.curl_tag}}'
-          path: '${{ github.workspace}}/install/xcframework'
+#  ios:
+#    runs-on: macos-latest
+#    steps:
+#      - name: 'Setup iOS toolchain'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'leetal/ios-cmake'
+#          ref: '4.5.0'
+#          path: 'ios-cmake'
+#          sparse-checkout: 'ios.toolchain.cmake'
+#      - name: 'Checkout config'
+#        uses: actions/checkout@v4
+#        with:
+#          path: 'config'
+#          sparse-checkout: 'curl'
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config/curl/config.json"
+#      - name: 'Checkout source'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'curl/curl'
+#          ref: ${{steps.config.outputs.curl_tag}}
+#          fetch-depth: 0
+#          path: 'source'
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#                -GXcode \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_INSTALL_PREFIX="install-iphone" \
+#                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+#                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+#                -DPLATFORM=OS64 \
+#                -DBUILD_CURL_EXE=OFF \
+#                -DCURL_USE_SECTRANSP=ON \
+#                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+#                -DUSE_NGHTTP2=OFF \
+#                -DCURL_USE_LIBSSH2=OFF \
+#                -DUSE_LIBIDN2=OFF \
+#                -DBUILD_STATIC_LIBS=ON \
+#                -DBUILD_SHARED_LIBS=OFF
+#          cmake --build build --config Release --parallel
+#          cmake --install build --config Release
+#
+#          rm -r build
+#
+#          cmake -S source -B build \
+#                -GXcode \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
+#                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+#                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+#                -DPLATFORM=SIMULATOR64 \
+#                -DBUILD_CURL_EXE=OFF \
+#                -DCURL_USE_SECTRANSP=ON \
+#                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+#                -DUSE_NGHTTP2=OFF \
+#                -DCURL_USE_LIBSSH2=OFF \
+#                -DUSE_LIBIDN2=OFF \
+#                -DBUILD_STATIC_LIBS=ON \
+#                -DBUILD_SHARED_LIBS=OFF
+#          cmake --build build --config Release --parallel
+#          cmake --install build --config Release
+#
+#          rm -r build
+#
+#          cmake -S source -B build \
+#                -GXcode \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
+#                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+#                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+#                -DPLATFORM=SIMULATORARM64 \
+#                -DBUILD_CURL_EXE=OFF \
+#                -DCURL_USE_SECTRANSP=ON \
+#                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+#                -DUSE_NGHTTP2=OFF \
+#                -DCURL_USE_LIBSSH2=OFF \
+#                -DUSE_LIBIDN2=OFF \
+#                -DBUILD_STATIC_LIBS=ON \
+#                -DBUILD_SHARED_LIBS=OFF
+#          cmake --build build --config Release --parallel
+#          cmake --install build --config Release
+#
+#          cp -r 'install-iphonesimulator64' 'install-iphonesimulator'
+#
+#          lipo \
+#            install-iphonesimulator64/lib/libcurl.a \
+#            install-iphonesimulatorarm64/lib/libcurl.a \
+#            -create -output install-iphonesimulator/lib/libcurl.a
+#
+#          xcodebuild -create-xcframework \
+#            -library install-iphonesimulator/lib/libcurl.a \
+#            -headers install-iphonesimulator/include \
+#            -library install-iphone/lib/libcurl.a \
+#            -headers install-iphone/include \
+#            -output install/xcframework/curl.xcframework
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'curl-ios-${{steps.config.outputs.curl_tag}}'
+#          path: '${{ github.workspace}}/install/xcframework'
