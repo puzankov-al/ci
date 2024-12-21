@@ -217,7 +217,9 @@ jobs:
                 -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF
+                -DUSE_LIBIDN2=OFF \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
@@ -234,7 +236,9 @@ jobs:
                 -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF
+                -DUSE_LIBIDN2=OFF \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
@@ -251,10 +255,12 @@ jobs:
                 -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
-                -DUSE_LIBIDN2=OFF
+                -DUSE_LIBIDN2=OFF \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
-          
+
           cp -r 'install-iphonesimulator64' 'install-iphonesimulator'
           
           lipo \
