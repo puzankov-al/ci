@@ -165,6 +165,7 @@ jobs:
                 -DUSE_NGHTTP2=OFF \
                 -DCURL_USE_LIBSSH2=OFF \
                 -DUSE_LIBIDN2=OFF \
+                -DHTTP_ONLY=ON \
                 -DBUILD_STATIC_LIBS=ON \
                 -DBUILD_SHARED_LIBS=OFF
       - name: 'cmake build'
