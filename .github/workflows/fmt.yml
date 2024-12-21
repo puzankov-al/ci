@@ -238,39 +238,45 @@ jobs:
         shell: bash
         run: |
           cmake -S source -B build \
-               -GXcode \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX="install-iphone" \
-               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-               -DPLATFORM=OS64 \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphone" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DPLATFORM=OS64 \
+                -DENABLE_BITCODE=TRUE \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DFMT_DOC=OFF \
+                -DFMT_TEST=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
           rm -r build
           
           cmake -S source -B build \
-               -GXcode \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
-               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-               -DPLATFORM=SIMULATOR64 \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DPLATFORM=SIMULATOR64 \
+                -DENABLE_BITCODE=TRUE \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DFMT_DOC=OFF \
+                -DFMT_TEST=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
           rm -r build
           
           cmake -S source -B build \
-               -GXcode \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
-               -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
-               -DPLATFORM=SIMULATORARM64 \
-               -DFMT_DOC=OFF \
-               -DFMT_TEST=OFF
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DPLATFORM=SIMULATORARM64 \
+                -DENABLE_BITCODE=TRUE \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DFMT_DOC=OFF \
+                -DFMT_TEST=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
@@ -282,11 +288,11 @@ jobs:
             -create -output install-iphonesimulator/lib/libfmt.a
           
           xcodebuild -create-xcframework \
-            -library install-iphonesimulator/lib/libfmt.a \
-            -headers install-iphonesimulator/include \
-            -library install-iphone/lib/libfmt.a \
-            -headers install-iphone/include \
-            -output install/xcframework/fmt.xcframework
+                     -library install-iphonesimulator/lib/libfmt.a \
+                     -headers install-iphonesimulator/include \
+                     -library install-iphone/lib/libfmt.a \
+                     -headers install-iphone/include \
+                     -output install/xcframework/fmt.xcframework
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
