@@ -1,0 +1,31 @@
+name: 'nghttp2'
+run-name: 'Build nghttp2'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: 'Setup Developer Command Prompt for Microsoft Visual C++'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: win64
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'nghttp2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/nghttp2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'nghttp2/nghttp2'
+          ref: ${{steps.config.outputs.nghttp2_tag}}
+          fetch-depth: 0
+          path: 'source'
