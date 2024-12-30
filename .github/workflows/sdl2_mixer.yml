@@ -21,9 +21,7 @@ jobs:
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
-          Write-Host '${{ steps.config.outputs.sdl_url }}';
-          Write-Host '${{ steps.config.outputs.sdl_url.windows }}';
-          $url = '${{ steps.config.outputs.sdl_url.windows }}';
+          $url = '${{ steps.config.outputs.sdl_windows_url }}';
           Write-Host $url;
           Invoke-WebRequest $url -OutFile ./sdl.zip;
           Expand-Archive -Path sdl.zip;
