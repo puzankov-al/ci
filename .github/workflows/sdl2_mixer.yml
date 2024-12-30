@@ -12,15 +12,23 @@ jobs:
 #        uses: ashutoshvarma/setup-ninja@master
 #        with:
 #          version: 1.12.1
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_mixer'
+          ref: ${{steps.config.outputs.sdl_mixer_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
       - name: Setup MSVC dependencies
         shell: pwsh
         run: |
           echo "::group::Downloading SDL"
-          .github/fetch_sdl_vc.ps1
+          source/.github/fetch_sdl_vc.ps1
           echo "SDL2_DIR=$Env:GITHUB_WORKSPACE/SDL2-devel-VC" >> $Env:GITHUB_ENV
           echo "::endgroup::"
           echo "::group::Downloading yasm"
-          .github/fetch_yasm.ps1
+          source/.github/fetch_yasm.ps1
           echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
           echo "::endgroup::"
       - uses: ilammy/msvc-dev-cmd@v1
@@ -36,14 +44,6 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2_mixer/config.json"
-      - name: 'Checkout source'
-        uses: actions/checkout@v4
-        with:
-          repository: 'libsdl-org/SDL_mixer'
-          ref: ${{steps.config.outputs.sdl_mixer_tag}}
-          fetch-depth: 0
-          path: 'source'
-          submodules: recursive
       - name: 'cmake configure'
         shell: bash
         run: |
