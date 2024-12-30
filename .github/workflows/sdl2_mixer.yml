@@ -12,6 +12,16 @@ jobs:
 #        uses: ashutoshvarma/setup-ninja@master
 #        with:
 #          version: 1.12.1
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_mixer'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_mixer/config.json"
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
@@ -35,16 +45,6 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2_mixer'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2_mixer/config.json"
       - name: 'cmake configure'
         shell: bash
         run: |
