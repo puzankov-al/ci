@@ -23,6 +23,7 @@ jobs:
       - name: Setup MSVC dependencies
         shell: pwsh
         run: |
+          Get-ChildItem -Recurse "./"
           echo "::group::Downloading SDL"
           source/.github/fetch_sdl_vc.ps1
           echo "SDL2_DIR=$Env:GITHUB_WORKSPACE/SDL2-devel-VC" >> $Env:GITHUB_ENV
