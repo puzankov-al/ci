@@ -13,7 +13,6 @@ jobs:
 #        with:
 #          version: 1.12.1
       - name: Setup MSVC dependencies
-        if: "matrix.platform.msvc"
         shell: pwsh
         run: |
           echo "::group::Downloading SDL"
@@ -25,7 +24,6 @@ jobs:
           echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
           echo "::endgroup::"
       - uses: ilammy/msvc-dev-cmd@v1
-        if: "matrix.platform.msvc"
         with:
           arch: x64
       - name: 'Checkout config'
@@ -56,7 +54,10 @@ jobs:
                 -DCMAKE_BUILD_TYPE=Release \
                 -DSDL2MIXER_MP3_MPG123=ON \
                 -DSDL2MIXER_VORBIS=VORBISFILE \
-                -DCMAKE_INSTALL_PREFIX=install
+                -DCMAKE_INSTALL_PREFIX=install \
+                -DBUILD_SHARED_LIBS=ON \
+                -DCMAKE_PREFIX_PATH="${{ env.SDL2_DIR }}"
+                
           
 #               -DSDL_WERROR=ON \
 #               -DSDL_STATIC=OFF \
