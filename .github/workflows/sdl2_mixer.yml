@@ -18,6 +18,15 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2_mixer/config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          Write-Host '${{ steps.config.outputs.sdl_url }}';
+          Write-Host '${{ steps.config.outputs.sdl_url.windows }}';
+          $url = '${{ steps.config.outputs.sdl_url.windows }}';
+          Write-Host $url;
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
@@ -36,13 +45,6 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - name: 'Fetch SDL2'
-        shell: pwsh
-        run: |
-          $url = '${{ steps.config.outputs.sdl_url.windows }}';
-          Write-Host $url;
-          Invoke-WebRequest $url -OutFile ./sdl.zip;
-          Expand-Archive -Path sdl.zip;
       - name: 'cmake configure'
         shell: bash
         run: |
