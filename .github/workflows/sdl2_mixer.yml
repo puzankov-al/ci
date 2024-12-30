@@ -8,10 +8,10 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
+#      - name: 'Setup Ninja'
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          version: 1.12.1
       - name: Setup MSVC dependencies
         if: "matrix.platform.msvc"
         shell: pwsh
@@ -50,9 +50,8 @@ jobs:
         shell: bash
         run: |
           cmake -S source -B build \
-                -GNinja \
-#                -A x64 \
-                -DSDL2MIXER_VENDORED=ON
+                -A x64 \
+                -DSDL2MIXER_VENDORED=ON \
                 -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DSDL2MIXER_MP3_MPG123=ON \
