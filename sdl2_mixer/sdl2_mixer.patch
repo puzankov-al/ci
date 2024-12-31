@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dc37b28f..0397eaa0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -244,7 +244,7 @@ add_library(SDL2_mixer::${sdl2_mixer_export_name} ALIAS SDL2_mixer)
+ target_include_directories(SDL2_mixer
+     PUBLIC
+         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
++        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+     PRIVATE
+         src
+         src/codecs
+@@ -891,11 +891,11 @@ if(SDL2MIXER_INSTALL)
+         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT devel
+         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT library
+         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT library
+-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2" COMPONENT devel
++        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2_mixer" COMPONENT devel
+     )
+     install(FILES
+         "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL_mixer.h"
+-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2" COMPONENT devel
++        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2_mixer" COMPONENT devel
+     )
+ 
+     if(INSTALL_EXTRA_TARGETS)
