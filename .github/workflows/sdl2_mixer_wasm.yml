@@ -48,7 +48,7 @@ jobs:
       - name: 'cmake configure'
         shell: bash
         run: |
-          cmake -S source -B build \
+          emcmake cmake -S source -B build \
                 -G Ninja \
                 -DSDL2MIXER_VENDORED=ON \
                 -DSDL2MIXER_MOD=OFF \
@@ -62,7 +62,7 @@ jobs:
                 -DSDL2MIXER_VORBIS=VORBISFILE \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/lib/cmake/SDL2'
+                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2'
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
