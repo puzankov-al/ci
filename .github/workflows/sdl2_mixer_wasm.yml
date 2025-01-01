@@ -1,0 +1,76 @@
+name: 'sdl2_mixer wasm'
+run-name: 'Build SDL2 mixer for wasm'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_mixer'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_mixer/config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          $url = '${{ steps.config.outputs.sdl_wasm_url }}';
+          Write-Host $url;
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_mixer'
+          ref: ${{steps.config.outputs.sdl_mixer_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_mixer'
+        shell: bash
+        run: 'cd source && git apply ../config/sdl2_mixer/sdl2_mixer.patch'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+                -G Ninja \
+                -DSDL2MIXER_VENDORED=ON \
+                -DSDL2MIXER_MOD=OFF \
+                -DSDL2MIXER_OPUS=OFF \
+                -DSDL2MIXER_WAVE=OFF \
+                -DSDL2MIXER_WAVPACK=OFF \
+                -DSDL2MIXER_FLAC=OFF \
+                -DSDL2MIXER_GME=OFF \
+                -DSDL2MIXER_MIDI=OFF \
+                -DSDL2MIXER_MP3_MPG123=ON \
+                -DSDL2MIXER_VORBIS=VORBISFILE \
+                -DCMAKE_INSTALL_PREFIX=install \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/lib/cmake/SDL2'
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_mixer-wasm-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace}}/install'

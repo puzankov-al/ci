@@ -33,13 +33,13 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config/sdl2_mixer/config.json"
-      - name: 'Fetch SDL2'
-        shell: pwsh
-        run: |
-          $url = '${{ steps.config.outputs.sdl_windows_url }}';
-          Write-Host $url;
-          Invoke-WebRequest $url -OutFile ./sdl.zip;
-          Expand-Archive -Path sdl.zip;
+#      - name: 'Fetch SDL2'
+#        shell: pwsh
+#        run: |
+#          $url = '${{ steps.config.outputs.sdl_windows_url }}';
+#          Write-Host $url;
+#          Invoke-WebRequest $url -OutFile ./sdl.zip;
+#          Expand-Archive -Path sdl.zip;
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
