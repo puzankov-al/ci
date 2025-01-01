@@ -51,6 +51,7 @@ jobs:
           emcmake cmake -S source -B build \
                 -G Ninja \
                 -DBUILD_SHARED_LIBS=OFF \
+                -DSDL2MIXER_DEPS_SHARED=OFF \
                 -DSDL2MIXER_VENDORED=ON \
                 -DSDL2MIXER_MOD=OFF \
                 -DSDL2MIXER_OPUS=OFF \
