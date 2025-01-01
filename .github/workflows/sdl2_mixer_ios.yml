@@ -1,0 +1,81 @@
+name: 'sdl2 mixer windows'
+run-name: 'Build SDL2 mixer for windows'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Setup MSVC dependencies
+        shell: pwsh
+        run: |
+          echo "::group::Downloading yasm"
+          source/.github/fetch_yasm.ps1
+          echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
+          echo "::endgroup::"
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_mixer'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_mixer/config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          $url = '${{ steps.config.outputs.sdl_windows_url }}';
+          Write-Host $url;
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_mixer'
+          ref: ${{steps.config.outputs.sdl_mixer_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_mixer'
+        shell: bash
+        run: 'cd source && git apply ../config/sdl2_mixer/sdl2_mixer.patch'
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_mixer-iphoneos.xcarchive"
+          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_mixer-iphonesimulator.xcarchive"
+
+          # todo: Framework schema compilation is broken for iphonesimulator
+          xcodebuild archive \
+                     -project source/Xcode/SDL_mixer.xcodeproj \
+                     -scheme 'Static Library' \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -archivePath $IPHONEOS_ARCHIVE_PATH
+
+          xcodebuild archive \
+                     PLATFORM=iOS \
+                     -project source/Xcode/SDL_mixer.xcodeproj \
+                     -scheme 'Static Library' \
+                     -configuration Release \
+                     -sdk iphonesimulator \
+                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
+
+          xcodebuild -create-xcframework \
+                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_mixer.a" \
+                     -headers source/include \
+                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_mixer.a" \
+                     -headers source/include \
+                     -output install/xcframework/SDL2_mixer.xcframework
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_mixer-ios-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace}}/install/xcframework'
