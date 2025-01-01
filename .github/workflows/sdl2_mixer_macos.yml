@@ -1,4 +1,4 @@
-name: 'sdl2 mixer macos'
+name: 'sdl2_mixer macos'
 run-name: 'Build SDL2 mixer for macos'
 
 on:

@@ -1,4 +1,4 @@
-name: 'sdl2 mixer ios'
+name: 'sdl2_mixer ios'
 run-name: 'Build SDL2 mixer for ios'
 
 on:
