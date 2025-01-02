@@ -64,7 +64,8 @@ jobs:
                 -DSDL2MIXER_VORBIS=VORBISFILE \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2'
+                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+                -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
