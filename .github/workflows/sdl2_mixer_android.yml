@@ -80,5 +80,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_mixer-wasm-${{steps.config.outputs.sdl_mixer_tag}}'
+          name: 'sdl2_mixer-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_image_tag}}'
           path: '${{ github.workspace}}/install'
