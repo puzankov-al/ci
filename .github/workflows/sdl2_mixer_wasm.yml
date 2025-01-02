@@ -60,7 +60,6 @@ jobs:
                 -DSDL2MIXER_FLAC=OFF \
                 -DSDL2MIXER_GME=OFF \
                 -DSDL2MIXER_MIDI=OFF \
-                -DSDL2MIXER_VORBIS=VORBISFILE \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \

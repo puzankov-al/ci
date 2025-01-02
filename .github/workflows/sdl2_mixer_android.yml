@@ -1,23 +1,25 @@
-name: 'sdl2_mixer windows'
-run-name: 'Build SDL2 mixer for windows'
+name: 'sdl2_mixer android'
+run-name: 'Build SDL2 mixer for android'
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
     steps:
-      - name: Setup MSVC dependencies
-        shell: pwsh
-        run: |
-          echo "::group::Downloading yasm"
-          source/.github/fetch_yasm.ps1
-          echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
-          echo "::endgroup::"
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
         with:
-          arch: x64
+          ndk-version: r27c
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
@@ -31,7 +33,8 @@ jobs:
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
-          $url = '${{ steps.config.outputs.sdl_windows_url }}';
+          $urls = '${{ steps.config.outputs.sdl_android_url }}' | ConvertFrom-Json -AsHashtable;
+          $url = $urls['${{ matrix.arch }}'];
           Write-Host $url;
           Invoke-WebRequest $url -OutFile ./sdl.zip;
           Expand-Archive -Path sdl.zip;
@@ -50,7 +53,9 @@ jobs:
         shell: bash
         run: |
           cmake -S source -B build \
-                -A x64 \
+                -G Ninja \
+                -DBUILD_SHARED_LIBS=ON \
+                -DSDL2MIXER_DEPS_SHARED=ON \
                 -DSDL2MIXER_VENDORED=ON \
                 -DSDL2MIXER_MOD=OFF \
                 -DSDL2MIXER_OPUS=OFF \
@@ -61,7 +66,11 @@ jobs:
                 -DSDL2MIXER_MIDI=OFF \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/cmake'
+                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+                -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+                -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+                -DANDROID_PLATFORM="29" \
+                -DANDROID_ABI=${{ matrix.arch }}
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
@@ -71,5 +80,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_mixer-windows-${{steps.config.outputs.sdl_mixer_tag}}'
+          name: 'sdl2_mixer-wasm-${{steps.config.outputs.sdl_mixer_tag}}'
           path: '${{ github.workspace}}/install'
