@@ -1,0 +1,118 @@
+name: 'sdl2 android'
+run-name: 'Build SDL2 for Android'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL'
+          ref: ${{steps.config.outputs.sdl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'build armeabi-v7a'
+        shell: bash
+        run: |
+          ARCH="armeabi-v7a"
+          cmake -S source -B build/$ARCH \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+               -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+               -DANDROID_PLATFORM="29" \
+               -DANDROID_ABI=$ARCH \
+               -DSDL_WERROR=OFF \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_STATIC=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -G Ninja
+          cmake --build build/$ARCH --config Release --parallel
+          cmake --install build/$ARCH --config Release
+      - name: 'build arm64-v8a'
+        shell: bash
+        run: |
+          ARCH="arm64-v8a"
+          cmake -S source -B build/$ARCH \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+               -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+               -DANDROID_PLATFORM="29" \
+               -DANDROID_ABI=$ARCH \
+               -DSDL_WERROR=OFF \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_STATIC=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -G Ninja
+          cmake --build build/$ARCH --config Release --parallel
+          cmake --install build/$ARCH --config Release
+      - name: 'build x86'
+        shell: bash
+        run: |
+          ARCH="x86"
+          cmake -S source -B build/$ARCH \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+               -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+               -DANDROID_PLATFORM="29" \
+               -DANDROID_ABI=$ARCH \
+               -DSDL_WERROR=OFF \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_STATIC=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -G Ninja
+          cmake --build build/$ARCH --config Release --parallel
+          cmake --install build/$ARCH --config Release
+      - name: 'build x86_64'
+        shell: bash
+        run: |
+          ARCH="x86_64"
+          cmake -S source -B build/$ARCH \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+               -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+               -DANDROID_PLATFORM="29" \
+               -DANDROID_ABI=$ARCH \
+               -DSDL_WERROR=OFF \
+               -DSDL_TEST=OFF \
+               -DSDL_TESTS=OFF \
+               -DSDL_STATIC=OFF \
+               -DSDL_INSTALL_TESTS=OFF \
+               -DSDL2_DISABLE_INSTALL=OFF \
+               -G Ninja
+          cmake --build build/$ARCH --config Release --parallel
+          cmake --install build/$ARCH --config Release
+
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2-android-${{steps.config.outputs.sdl_tag}}'
+          path: '${{ github.workspace}}/install'
