@@ -82,3 +82,33 @@ jobs:
         with:
           name: 'sdl2_mixer-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_mixer_tag}}'
           path: '${{ github.workspace}}/install'
+
+  pack:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download armeabi-v7a'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2_mixer-android-armeabi-v7a-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace }}/install/armeabi-v7a'
+      - name: 'Download arm64-v8a'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2_mixer-android-arm64-v8a-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace }}/install/arm64-v8a'
+      - name: 'Download x86'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2_mixer-android-x86-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace }}/install/x86'
+      - name: 'Download x86_64'
+        uses: actions/download-artifact@v4
+        with:
+          name: 'sdl2_mixer-android-x86_64-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace }}/install/x86_64'
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_mixer-android-${{steps.config.outputs.sdl_mixer_tag}}'
+          path: '${{ github.workspace}}/install'
