@@ -8,13 +8,6 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Setup MSVC dependencies
-        shell: pwsh
-        run: |
-          echo "::group::Downloading yasm"
-          source/.github/fetch_yasm.ps1
-          echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
-          echo "::endgroup::"
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -43,6 +36,13 @@ jobs:
           fetch-depth: 0
           path: 'source'
           submodules: recursive
+      - name: Setup MSVC dependencies
+        shell: pwsh
+        run: |
+          echo "::group::Downloading yasm"
+          source/.github/fetch_yasm.ps1
+          echo "${{ github.workspace }}" >> $Env:GITHUB_PATH
+          echo "::endgroup::"
       - name: 'Patch SDL2_mixer'
         shell: bash
         run: 'cd source && git apply ../config/sdl2_mixer/sdl2_mixer.patch'
