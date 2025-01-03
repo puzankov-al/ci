@@ -31,7 +31,8 @@ jobs:
           submodules: recursive
       - name: 'Patch SDL2_ttf'
         shell: bash
-        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
+        working-directory: source
+        run: git apply ../patch/sdl2_ttf.patch
       - name: 'cmake configure'
         shell: bash
         run: |
