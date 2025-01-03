@@ -1,5 +1,5 @@
-name: 'openssl'
-run-name: 'Build openssl'
+name: 'openssl windows'
+run-name: 'Build openssl for windows'
 
 on:
   workflow_dispatch:

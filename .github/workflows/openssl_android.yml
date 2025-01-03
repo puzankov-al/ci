@@ -1,5 +1,5 @@
-name: 'openssl'
-run-name: 'Build openssl'
+name: 'openssl android'
+run-name: 'Build openssl for android'
 
 on:
   workflow_dispatch:
