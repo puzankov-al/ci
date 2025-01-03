@@ -61,7 +61,7 @@ jobs:
                   -DSDL2MIXER_MIDI=OFF \
                   -DCMAKE_INSTALL_PREFIX=install/$ARCH \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+                  -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/$ARCH/lib/cmake/SDL2' \
                   -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
                   -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
                   -DANDROID_PLATFORM="29" \
