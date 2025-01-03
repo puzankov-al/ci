@@ -10,14 +10,11 @@ jobs:
 #    steps:
 #      - name: 'Checkout config'
 #        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'fmt'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
 #        with:
-#          file_path: "config/fmt/config.json"
+#          file_path: "config.json"
 #      - name: 'Checkout source'
 #        uses: actions/checkout@v4
 #        with:
@@ -61,14 +58,11 @@ jobs:
 #          actions-cache-folder: 'emsdk-cache'
 #      - name: 'Checkout config'
 #        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'fmt'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
 #        with:
-#          file_path: "config/fmt/config.json"
+#          file_path: "config.json"
 #      - name: 'Checkout source'
 #        uses: actions/checkout@v4
 #        with:
@@ -115,14 +109,11 @@ jobs:
 #          ndk-version: r27c
 #      - name: 'Checkout config'
 #        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'fmt'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
 #        with:
-#          file_path: "config/fmt/config.json"
+#          file_path: "config.json"
 #      - name: 'Checkout source'
 #        uses: actions/checkout@v4
 #        with:
@@ -219,14 +210,11 @@ jobs:
 #          sparse-checkout: 'ios.toolchain.cmake'
 #      - name: 'Checkout config'
 #        uses: actions/checkout@v4
-#        with:
-#          path: 'config'
-#          sparse-checkout: 'fmt'
 #      - name: 'read config.json'
 #        id: config
 #        uses: ActionsTools/read-json-action@main
 #        with:
-#          file_path: "config/fmt/config.json"
+#          file_path: "config.json"
 #      - name: 'Checkout source'
 #        uses: actions/checkout@v4
 #        with:

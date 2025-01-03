@@ -43,7 +43,7 @@ jobs:
           echo "::endgroup::"
       - name: 'Patch SDL2_mixer'
         shell: bash
-        run: 'cd source && git apply ../config/sdl2_mixer/sdl2_mixer.patch'
+        run: 'cd source && git apply ../patch/sdl2_mixer.patch'
       - name: 'cmake configure'
         shell: bash
         run: |

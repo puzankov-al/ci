@@ -27,7 +27,7 @@ jobs:
           submodules: recursive
       - name: 'Patch SDL2_image'
         shell: bash
-        run: 'cd source && git apply ../config/sdl2_image/sdl2_image.patch'
+        run: 'cd source && git apply ../patch/sdl2_image.patch'
       - name: 'diff SDL2_image'
         shell: bash
         run: 'cd source && git diff'
