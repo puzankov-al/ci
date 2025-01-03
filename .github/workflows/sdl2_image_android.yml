@@ -1,0 +1,84 @@
+name: 'sdl2_image android'
+run-name: 'Build SDL2 for Android'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_image'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_image/config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest '${{ steps.config.outputs.sdl_android_url }}' -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_image'
+          ref: ${{steps.config.outputs.sdl_image_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_image'
+        shell: bash
+        run: 'cd source && git apply ../config/sdl2_image/sdl2_image.patch'
+      - name: 'diff SDL2_image'
+        shell: bash
+        run: 'cd source && git diff'
+      - name: 'build'
+        shell: bash
+        run: |
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
+          do
+            echo "Build for $ARCH"
+            cmake -S source -B build/$ARCH \
+                 -DSDL2IMAGE_VENDORED=ON \
+                 -DBUILD_SHARED_LIBS=ON \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DSDL2IMAGE_BMP=OFF \
+                 -DSDL2IMAGE_GIF=OFF \
+                 -DSDL2IMAGE_LBM=OFF \
+                 -DSDL2IMAGE_PCX=OFF \
+                 -DSDL2IMAGE_PNM=OFF \
+                 -DSDL2IMAGE_QOI=OFF \
+                 -DSDL2IMAGE_TGA=OFF \
+                 -DSDL2IMAGE_XCF=OFF \
+                 -DSDL2IMAGE_XPM=OFF \
+                 -DSDL2IMAGE_XV=OFF \
+                 -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+                 -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+                 -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+                 -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+                 -DANDROID_PLATFORM="29" \
+                 -DANDROID_ABI=$ARCH \
+                 -G Ninja
+            cmake --build build/$ARCH --config Release --parallel
+            cmake --install build/$ARCH --config Release  
+          done
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_image-android-${{steps.config.outputs.sdl_image_tag}}'
+          path: '${{ github.workspace}}/install'
+

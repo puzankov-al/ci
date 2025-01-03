@@ -1,0 +1,43 @@
+name: 'sdl2_image macos'
+run-name: 'Build SDL2 image for macos'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_image'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_image/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_image'
+          ref: ${{steps.config.outputs.sdl_image_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          xcodebuild archive \
+                     -project source/Xcode/SDL_image.xcodeproj \
+                     -scheme 'Framework' \
+                     -configuration Release \
+                     -sdk macosx \
+                     -destination 'generic/platform=macOS' \
+                     -archivePath "${{ github.workspace}}/SDL2_image.xcarchive"
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_image-macos-${{steps.config.outputs.sdl_image_tag}}'
+          path: '${{ github.workspace}}/SDL2_image.xcarchive/Products/Library/Frameworks'

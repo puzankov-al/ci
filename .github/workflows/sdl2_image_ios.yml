@@ -1,0 +1,68 @@
+name: 'sdl2_image ios'
+run-name: 'Build SDL2 image for ios'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          path: 'config'
+          sparse-checkout: 'sdl2_image'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config/sdl2_image/config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_image'
+          ref: ${{steps.config.outputs.sdl_image_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_image'
+        shell: bash
+        run: 'cd source && git apply ../config/sdl2_image/sdl2_image.patch'
+      - name: 'diff SDL2_image'
+        shell: bash
+        run: 'cd source && git diff'
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          IPHONEOS_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphoneos.xcarchive"
+          IPHONESIMULATOR_ARCHIVE_PATH="${{ github.workspace }}/install/SDL2_image-iphonesimulator.xcarchive"
+
+          # todo: Framework schema compilation is broken for iphonesimulator
+          xcodebuild archive \
+                     -project source/Xcode/SDL_image.xcodeproj \
+                     -scheme 'Static Library' \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -archivePath $IPHONEOS_ARCHIVE_PATH
+
+          xcodebuild archive \
+                     PLATFORM=iOS \
+                     -project source/Xcode/SDL_image.xcodeproj \
+                     -scheme 'Static Library' \
+                     -configuration Release \
+                     -sdk iphonesimulator \
+                     -archivePath $IPHONESIMULATOR_ARCHIVE_PATH
+
+          xcodebuild -create-xcframework \
+                     -library "$IPHONEOS_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
+                     -headers source/include \
+                     -library "$IPHONESIMULATOR_ARCHIVE_PATH/Products/usr/local/lib/libSDL2_image.a" \
+                     -headers source/include \
+                     -output install/xcframework/SDL2_image.xcframework
+
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_image-ios-${{steps.config.outputs.sdl_image_tag}}'
+          path: '${{ github.workspace}}/install/xcframework'

@@ -30,10 +30,7 @@ jobs:
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
-          $urls = '${{ steps.config.outputs.sdl_android_url }}' | ConvertFrom-Json -AsHashtable;
-          $url = $urls['${{ matrix.arch }}'];
-          Write-Host $url;
-          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Invoke-WebRequest '${{ steps.config.outputs.sdl_android_url }}' -OutFile ./sdl.zip;
           Expand-Archive -Path sdl.zip;
       - name: 'Checkout source'
         uses: actions/checkout@v4
@@ -46,74 +43,34 @@ jobs:
       - name: 'Patch SDL2_mixer'
         shell: bash
         run: 'cd source && git apply ../config/sdl2_mixer/sdl2_mixer.patch'
-      - name: 'cmake configure'
+      - name: 'build'
         shell: bash
         run: |
-          cmake -S source -B build \
-                -G Ninja \
-                -DBUILD_SHARED_LIBS=ON \
-                -DSDL2MIXER_DEPS_SHARED=ON \
-                -DSDL2MIXER_VENDORED=ON \
-                -DSDL2MIXER_MOD=OFF \
-                -DSDL2MIXER_OPUS=OFF \
-                -DSDL2MIXER_WAVE=OFF \
-                -DSDL2MIXER_WAVPACK=OFF \
-                -DSDL2MIXER_FLAC=OFF \
-                -DSDL2MIXER_GME=OFF \
-                -DSDL2MIXER_MIDI=OFF \
-                -DCMAKE_INSTALL_PREFIX=install \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
-                -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
-                -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-                -DANDROID_PLATFORM="29" \
-                -DANDROID_ABI=${{ matrix.arch }}
-      - name: 'cmake build'
-        shell: bash
-        run: cmake --build build --config Release --parallel
-      - name: 'cmake install'
-        shell: bash
-        run: cmake --install build --config Release
-      - name: 'Store source archives'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'sdl2_mixer-android-${{ matrix.arch }}-${{steps.config.outputs.sdl_mixer_tag}}'
-          path: '${{ github.workspace}}/install'
-
-  pack:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2_mixer'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2_mixer/config.json"
-      - name: 'Download armeabi-v7a'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2_mixer-android-armeabi-v7a-${{steps.config.outputs.sdl_mixer_tag}}'
-          path: '${{ github.workspace }}/install/armeabi-v7a'
-      - name: 'Download arm64-v8a'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2_mixer-android-arm64-v8a-${{steps.config.outputs.sdl_mixer_tag}}'
-          path: '${{ github.workspace }}/install/arm64-v8a'
-      - name: 'Download x86'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2_mixer-android-x86-${{steps.config.outputs.sdl_mixer_tag}}'
-          path: '${{ github.workspace }}/install/x86'
-      - name: 'Download x86_64'
-        uses: actions/download-artifact@v4
-        with:
-          name: 'sdl2_mixer-android-x86_64-${{steps.config.outputs.sdl_mixer_tag}}'
-          path: '${{ github.workspace }}/install/x86_64'
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
+          do
+            echo "Build for $ARCH"
+            cmake -S source -B build/$ARCH \
+                  -G Ninja \
+                  -DBUILD_SHARED_LIBS=ON \
+                  -DSDL2MIXER_DEPS_SHARED=ON \
+                  -DSDL2MIXER_VENDORED=ON \
+                  -DSDL2MIXER_MOD=OFF \
+                  -DSDL2MIXER_OPUS=OFF \
+                  -DSDL2MIXER_WAVE=OFF \
+                  -DSDL2MIXER_WAVPACK=OFF \
+                  -DSDL2MIXER_FLAC=OFF \
+                  -DSDL2MIXER_GME=OFF \
+                  -DSDL2MIXER_MIDI=OFF \
+                  -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+                  -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+                  -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+                  -DANDROID_PLATFORM="29" \
+                  -DANDROID_ABI=$$ARCH
+            cmake --build build/$ARCH --config Release --parallel
+            cmake --install build/$ARCH --config Release
+          done
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:

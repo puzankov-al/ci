@@ -1,5 +1,5 @@
 {
-  "sdl_mixer_tag": "release-2.8.0",
+  "sdl_image_tag": "release-2.8.2",
   "sdl_windows_url":  "https://github.com/puzankov-al/ci/releases/download/all/sdl2-windows-release-2.30.10.zip",
   "sdl_wasm_url":  "https://github.com/puzankov-al/ci/releases/download/all/sdl2-wasm-release-2.30.10.zip",
   "sdl_android_url": "https://github.com/puzankov-al/ci/releases/download/all/sdl2-android-release-2.30.10.zip"
