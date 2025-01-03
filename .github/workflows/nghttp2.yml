@@ -8,20 +8,19 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - name: 'Setup Developer Command Prompt for Microsoft Visual C++'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: win64
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
-          path: 'config'
-          sparse-checkout: 'nghttp2'
+          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
         with:
-          file_path: "config/nghttp2/config.json"
+          file_path: "config.json"
+      - name: 'Setup Developer Command Prompt for Microsoft Visual C++'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: win64
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:

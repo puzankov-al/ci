@@ -157,20 +157,19 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - name: 'Setup Ninja'
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
-          path: 'config'
-          sparse-checkout: 'fmt'
+          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
         with:
-          file_path: "config/fmt/config.json"
+          file_path: "config.json"
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:

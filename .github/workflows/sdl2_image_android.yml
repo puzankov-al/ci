@@ -8,6 +8,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'config.json'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
       - name: 'Setup Ninja'
         uses: ashutoshvarma/setup-ninja@master
         with:
@@ -17,26 +26,17 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27c
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2_image'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2_image/config.json"
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
-          Invoke-WebRequest '${{ steps.config.outputs.sdl_android_url }}' -OutFile ./sdl.zip;
+          $url = 'https://github.com/puzankov-al/ci/releases/download/all/sdl2-android-${{ steps.config.outputs.sdl2_tag }}.zip'
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
           Expand-Archive -Path sdl.zip;
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL_image'
-          ref: ${{steps.config.outputs.sdl_image_tag}}
+          ref: ${{steps.config.outputs.sdl2_image_tag}}
           fetch-depth: 0
           path: 'source'
           submodules: recursive
@@ -79,6 +79,6 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_image-android-${{steps.config.outputs.sdl_image_tag}}'
+          name: 'sdl2_image-android-${{steps.config.outputs.sdl2_image_tag}}'
           path: '${{ github.workspace}}/install'
 

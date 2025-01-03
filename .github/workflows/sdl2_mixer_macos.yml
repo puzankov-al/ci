@@ -8,6 +8,15 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'config.json'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
       - name: 'Setup Macos dependencies'
         run: |
           brew install \
@@ -23,21 +32,11 @@ jobs:
             mpg123 \
             opusfile \
             wavpack
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2_mixer'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2_mixer/config.json"
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL_mixer'
-          ref: ${{steps.config.outputs.sdl_mixer_tag}}
+          ref: ${{steps.config.outputs.sdl2_mixer_tag}}
           fetch-depth: 0
           path: 'source'
           submodules: recursive
@@ -57,5 +56,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_mixer-macos-${{steps.config.outputs.sdl_mixer_tag}}'
+          name: 'sdl2_mixer-macos-${{steps.config.outputs.sdl2_mixer_tag}}'
           path: '${{ github.workspace}}/SDL2_mixer.xcarchive/Products/Library/Frameworks'

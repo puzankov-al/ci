@@ -11,18 +11,17 @@ jobs:
       - name: 'Checkout config'
         uses: actions/checkout@v4
         with:
-          path: 'config'
-          sparse-checkout: 'sdl2_image'
+          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
         with:
-          file_path: "config/sdl2_image/config.json"
+          file_path: "config.json"
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL_image'
-          ref: ${{steps.config.outputs.sdl_image_tag}}
+          ref: ${{steps.config.outputs.sdl2_image_tag}}
           fetch-depth: 0
           path: 'source'
           submodules: recursive
@@ -39,5 +38,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_image-macos-${{steps.config.outputs.sdl_image_tag}}'
+          name: 'sdl2_image-macos-${{steps.config.outputs.sdl2_image_tag}}'
           path: '${{ github.workspace}}/SDL2_image.xcarchive/Products/Library/Frameworks'

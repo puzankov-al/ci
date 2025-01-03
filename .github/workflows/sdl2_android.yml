@@ -8,6 +8,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'config.json'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
       - name: 'Setup Ninja'
         uses: ashutoshvarma/setup-ninja@master
         with:
@@ -17,21 +26,11 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27c
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2/config.json"
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL'
-          ref: ${{steps.config.outputs.sdl_tag}}
+          ref: ${{steps.config.outputs.sdl2_tag}}
           fetch-depth: 0
           path: 'source'
       - name: 'build armeabi-v7a'
@@ -114,5 +113,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2-android-${{steps.config.outputs.sdl_tag}}'
+          name: 'sdl2-android-${{steps.config.outputs.sdl2_tag}}'
           path: '${{ github.workspace}}/install'

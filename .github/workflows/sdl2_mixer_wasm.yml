@@ -8,6 +8,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: 'Checkout config'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'config.json'
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
       - name: 'Setup Emscripten'
         uses: mymindstorm/setup-emsdk@v14
         with:
@@ -17,26 +26,17 @@ jobs:
         uses: ashutoshvarma/setup-ninja@master
         with:
           version: 1.12.1
-      - name: 'Checkout config'
-        uses: actions/checkout@v4
-        with:
-          path: 'config'
-          sparse-checkout: 'sdl2_mixer'
-      - name: 'read config.json'
-        id: config
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: "config/sdl2_mixer/config.json"
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
-          Invoke-WebRequest '${{ steps.config.outputs.sdl_wasm_url }}' -OutFile ./sdl.zip;
+          $url = 'https://github.com/puzankov-al/ci/releases/download/all/sdl2-wasm-${{ steps.config.outputs.sdl2_tag }}.zip'
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
           Expand-Archive -Path sdl.zip;
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
           repository: 'libsdl-org/SDL_mixer'
-          ref: ${{steps.config.outputs.sdl_mixer_tag}}
+          ref: ${{steps.config.outputs.sdl2_mixer_tag}}
           fetch-depth: 0
           path: 'source'
           submodules: recursive
@@ -71,5 +71,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'sdl2_mixer-wasm-${{steps.config.outputs.sdl_mixer_tag}}'
+          name: 'sdl2_mixer-wasm-${{steps.config.outputs.sdl2_mixer_tag}}'
           path: '${{ github.workspace}}/install'

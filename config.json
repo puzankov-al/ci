@@ -1,0 +1,12 @@
+{
+  "sdl2_tag": "release-2.30.10",
+  "sdl2_image_tag": "release-2.8.2",
+  "sdl2_ttf_tag": "release-2.22.0",
+  "sdl2_mixer_tag": "release-2.8.0",
+  "threadpool_tag": "v4.1.0",
+  "openssl_tag": "openssl-3.4.0",
+  "curl_tag": "curl-8_11_1",
+  "nghttp2_tag": "v1.64.0",
+  "fmt_tag": "11.0.2",
+  "concurrentqueue_tag": "v1.0.4"
+}
