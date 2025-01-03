@@ -48,6 +48,8 @@ jobs:
       - name: 'cmake configure'
         shell: bash
         run: |
+          echo $PATH
+
           emcmake cmake -S source -B build \
                -DBUILD_SHARED_LIBS=OFF \
                -DSDL2TTF_VENDORED=ON \
