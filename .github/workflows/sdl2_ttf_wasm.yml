@@ -24,11 +24,6 @@ jobs:
         uses: ashutoshvarma/setup-ninja@master
         with:
           version: 1.12.1
-      - name: 'which ninja'
-        shell: bash
-        run: |
-          echo $PATH
-          which ninja
       - name: 'Fetch SDL2'
         shell: pwsh
         run: |
@@ -47,14 +42,9 @@ jobs:
         shell: bash
         working-directory: source
         run: git apply ../patch/sdl2_ttf.patch
-      - name: 'which ninja'
-        shell: bash
-        run: which ninja
       - name: 'cmake configure'
         shell: bash
         run: |
-          echo $PATH
-
           emcmake cmake -S source -B build \
                -DBUILD_SHARED_LIBS=OFF \
                -DSDL2TTF_VENDORED=ON \
