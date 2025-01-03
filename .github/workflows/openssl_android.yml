@@ -1,0 +1,72 @@
+name: 'openssl'
+run-name: 'Build openssl'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+      - name: 'Setup Perl'
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.38"
+      - name: 'Setup perl dependencies'
+        shell: pwsh
+        run: cpan -f -i Text::Template
+      - name: 'Setup NASM'
+        uses: ilammy/setup-nasm@v1
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'openssl/openssl'
+          ref: ${{steps.config.outputs.openssl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'build'
+        shell: bash
+        run: |
+          export ANDROID_NDK_ROOT=${{steps.setup-ndk.outputs.ndk-path}}
+          PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          
+          mkdir build
+          mkdir install
+          
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'
+          do
+            echo "Build for $ARCH"
+               
+            OPENSSL_ARCH=$ARCH
+            if [[ $OPENSSL_ARCH == "armeabi-v7a" ]]; then
+               OPENSSL_ARCH='arm'
+            elif [[ $OPENSSL_ARCH == "arm64-v8a" ]]; then
+               OPENSSL_ARCH='arm64'
+            fi
+
+            mkdir build/$ARCH
+            mkdir install/$ARCH
+
+            cd "${{ github.workspace}}/build/$ARCH"
+            ../../source/Configure android-$OPENSSL_ARCH -D__ANDROID_API__=29
+            make build_sw -j4
+            
+            make install_sw DESTDIR=../install/$ARCH
+          done
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'openssl-android-${{steps.config.outputs.openssl_tag}}'
+          path: '${{ github.workspace}}/install/usr/local'

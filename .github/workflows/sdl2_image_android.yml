@@ -45,7 +45,7 @@ jobs:
       - name: 'build'
         shell: bash
         run: |
-          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'
           do
             echo "Build for $ARCH"
             cmake -S source -B build/$ARCH \
