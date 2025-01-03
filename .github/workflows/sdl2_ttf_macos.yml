@@ -1,0 +1,40 @@
+name: 'sdl2_ttf macos'
+run-name: 'Build SDL2 ttf for macos'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_ttf'
+          ref: ${{steps.config.outputs.sdl2_ttf_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'xcode build'
+        shell: bash
+        run: |
+          xcodebuild archive \
+                     -project source/Xcode/SDL_ttf.xcodeproj \
+                     -scheme 'Framework' \
+                     -configuration Release \
+                     -sdk macosx \
+                     -destination 'generic/platform=macOS' \
+                     -archivePath "${{ github.workspace}}/SDL2_ttf.xcarchive"
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_ttf-macos-${{steps.config.outputs.sdl2_ttf_tag}}'
+          path: '${{ github.workspace}}/SDL2_ttf.xcarchive/Products/Library/Frameworks'

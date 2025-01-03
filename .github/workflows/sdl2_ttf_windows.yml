@@ -1,0 +1,58 @@
+name: 'sdl2_ttf windows'
+run-name: 'Build SDL2 ttf for windows'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          $url = 'https://github.com/puzankov-al/ci/releases/download/all/sdl2-windows-${{ steps.config.outputs.sdl2_tag }}.zip'
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_ttf'
+          ref: ${{steps.config.outputs.sdl2_ttf_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_ttf'
+        shell: bash
+        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+               -DBUILD_SHARED_LIBS=ON \
+               -DSDL2TTF_HARFBUZZ=ON \
+               -DSDL2TTF_SAMPLES=OFF \
+               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/cmake' \
+               -G "Visual Studio 17 2022" \
+               -A x64
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_ttf-windows-${{steps.config.outputs.sdl2_ttf_tag}}'
+          path: '${{ github.workspace}}/install'

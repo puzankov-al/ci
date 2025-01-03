@@ -1,0 +1,68 @@
+name: 'sdl2_ttf wasm'
+run-name: 'Build SDL2 ttf for wasm'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Setup Emscripten'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.62
+          actions-cache-folder: 'emsdk-cache'
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          $url = 'https://github.com/puzankov-al/ci/releases/download/all/sdl2-wasm-${{ steps.config.outputs.sdl2_tag }}.zip'
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_ttf'
+          ref: ${{steps.config.outputs.sdl2_ttf_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_ttf'
+        shell: bash
+        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          emcmake cmake -S source -B build \
+               -DBUILD_SHARED_LIBS=OFF \
+               -DSDL2TTF_VENDORED=ON \
+               -DSDL2TTF_HARFBUZZ=ON \
+               -DSDL2TTF_SAMPLES=OFF \
+               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
+               -G Ninja
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_ttf-wasm-${{steps.config.outputs.sdl2_ttf_tag}}'
+          path: '${{ github.workspace}}/install'

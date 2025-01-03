@@ -1,0 +1,74 @@
+name: 'sdl2_ttf android'
+run-name: 'Build SDL2 ttf for android'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+      - name: 'Fetch SDL2'
+        shell: pwsh
+        run: |
+          $url = 'https://github.com/puzankov-al/ci/releases/download/all/sdl2-android-${{ steps.config.outputs.sdl2_tag }}.zip'
+          Invoke-WebRequest $url -OutFile ./sdl.zip;
+          Expand-Archive -Path sdl.zip;
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL_ttf'
+          ref: ${{steps.config.outputs.sdl2_ttf_tag}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+      - name: 'Patch SDL2_ttf'
+        shell: bash
+        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
+          do
+            echo "Build for $ARCH"
+            cmake -S source -B build/$ARCH \
+                 -DBUILD_SHARED_LIBS=ON \
+                 -DSDL2TTF_VENDORED=ON \
+                 -DSDL2TTF_HARFBUZZ=ON \
+                 -DSDL2TTF_SAMPLES=OFF \
+                 -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+                 -DANDROID_PLATFORM="29" \
+                 -DANDROID_ABI=$ARCH \
+                 -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+                 -DCMAKE_PREFIX_PATH="${{ github.workspace }}/sdl/$ARCH/lib/cmake/SDL2" \
+                 -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
+                 -G Ninja
+            cmake --build build/$ARCH --config Release --parallel
+            cmake --install build/$ARCH --config Release
+          done
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl2_ttf-android-${{steps.config.outputs.sdl2_ttf_tag}}'
+          path: '${{ github.workspace}}/install'
