@@ -65,7 +65,7 @@ jobs:
                   -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
                   -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
                   -DANDROID_PLATFORM="29" \
-                  -DANDROID_ABI=$$ARCH
+                  -DANDROID_ABI=$ARCH
             cmake --build build/$ARCH --config Release --parallel
             cmake --install build/$ARCH --config Release
           done

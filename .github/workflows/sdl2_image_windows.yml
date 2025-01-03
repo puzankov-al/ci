@@ -50,7 +50,7 @@ jobs:
                -DSDL2IMAGE_XPM=OFF \
                -DSDL2IMAGE_XV=OFF \
                -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl' \
+               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/cmake' \
                -G "Visual Studio 17 2022" \
                -A x64
       - name: 'cmake build'

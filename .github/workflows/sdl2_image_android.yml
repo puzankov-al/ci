@@ -41,15 +41,13 @@ jobs:
       - name: 'Patch SDL2_image'
         shell: bash
         run: 'cd source && git apply ../patch/sdl2_image.patch'
-      - name: 'diff SDL2_image'
-        shell: bash
-        run: 'cd source && git diff'
       - name: 'build'
         shell: bash
         run: |
           for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
           do
             echo "Build for $ARCH"
+            ls '${{ github.workspace }}/sdl/$ARCH/lib/cmake/SDL2'
             cmake -S source -B build/$ARCH \
                  -DSDL2IMAGE_VENDORED=ON \
                  -DBUILD_SHARED_LIBS=ON \

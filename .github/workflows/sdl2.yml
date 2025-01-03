@@ -74,9 +74,6 @@ jobs:
 #      - name: 'Patch SDL2_image'
 #        shell: bash
 #        run: 'cd source && git apply ../patch/sdl2_image.patch'
-#      - name: 'diff SDL2_image'
-#        shell: bash
-#        run: 'cd source && git diff'
 #      - name: 'cmake configure'
 #        shell: bash
 #        run: |
@@ -137,9 +134,6 @@ jobs:
 #      - name: 'Patch SDL2_ttf'
 #        shell: bash
 #        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
-#      - name: 'diff SDL2_ttf'
-#        shell: bash
-#        run: 'cd source && git diff'
 #      - name: 'cmake configure'
 #        shell: bash
 #        run: |
@@ -312,9 +306,6 @@ jobs:
 #      - name: 'Patch SDL2_image'
 #        shell: bash
 #        run: 'cd source && git apply ../patch/sdl2_image.patch'
-#      - name: 'diff SDL2_image'
-#        shell: bash
-#        run: 'cd source && git diff'
 #      - name: 'xcode build'
 #        shell: bash
 #        run: |
@@ -371,9 +362,6 @@ jobs:
 #      - name: 'Patch SDL2_ttf'
 #        shell: bash
 #        run: 'cd source && git apply ../patch/sdl2_ttf.patch'
-#      - name: 'diff SDL2_ttf'
-#        shell: bash
-#        run: 'cd source && git diff'
 #      - name: 'xcode build'
 #        shell: bash
 #        run: |
