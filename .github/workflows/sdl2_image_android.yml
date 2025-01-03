@@ -1,5 +1,5 @@
 name: 'sdl2_image android'
-run-name: 'Build SDL2 for Android'
+run-name: 'Build SDL2 image for Android'
 
 on:
   workflow_dispatch:
@@ -8,10 +8,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main

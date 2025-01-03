@@ -8,7 +8,7 @@ jobs:
 #  windows:
 #    runs-on: windows-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -56,7 +56,7 @@ jobs:
 #        with:
 #          version: 3.1.62
 #          actions-cache-folder: 'emsdk-cache'
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -107,7 +107,7 @@ jobs:
 #        uses: nttld/setup-ndk@v1
 #        with:
 #          ndk-version: r27c
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -148,10 +148,8 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -208,7 +206,7 @@ jobs:
 #          ref: '4.5.0'
 #          path: 'ios-cmake'
 #          sparse-checkout: 'ios.toolchain.cmake'
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config

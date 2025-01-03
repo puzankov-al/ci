@@ -8,7 +8,7 @@ jobs:
 #  windows_sdl:
 #    runs-on: windows-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -51,7 +51,7 @@ jobs:
 #    needs: [windows_sdl]
 #    runs-on: windows-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -114,7 +114,7 @@ jobs:
 #    needs: [windows_sdl]
 #    runs-on: windows-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -168,7 +168,7 @@ jobs:
 #  macos_sdl:
 #    runs-on: macos-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -197,10 +197,8 @@ jobs:
   macos_sdl_image:
     runs-on: macos-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -233,10 +231,8 @@ jobs:
   macos_sdl_ttf:
     runs-on: macos-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -269,7 +265,7 @@ jobs:
 #  ios_sdl:
 #    runs-on: macos-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -298,7 +294,7 @@ jobs:
 #  ios_sdl_image:
 #    runs-on: macos-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -357,7 +353,7 @@ jobs:
 #  ios_sdl_ttf:
 #    runs-on: macos-latest
 #    steps:
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -428,7 +424,7 @@ jobs:
 #        uses: ashutoshvarma/setup-ninja@master
 #        with:
 #          version: 1.12.1
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -480,7 +476,7 @@ jobs:
 #        uses: ashutoshvarma/setup-ninja@master
 #        with:
 #          version: 1.12.1
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -552,7 +548,7 @@ jobs:
 #        uses: ashutoshvarma/setup-ninja@master
 #        with:
 #          version: 1.12.1
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -619,7 +615,7 @@ jobs:
 #        uses: nttld/setup-ndk@v1
 #        with:
 #          ndk-version: r27c
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -677,7 +673,7 @@ jobs:
 #        uses: nttld/setup-ndk@v1
 #        with:
 #          ndk-version: r27c
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config
@@ -756,7 +752,7 @@ jobs:
 #        uses: nttld/setup-ndk@v1
 #        with:
 #          ndk-version: r27c
-#      - name: 'Checkout config'
+#      - name: 'Checkout'
 #        uses: actions/checkout@v4
 #      - name: 'read config.json'
 #        id: config

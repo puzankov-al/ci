@@ -8,10 +8,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main

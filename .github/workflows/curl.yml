@@ -12,10 +12,8 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -62,10 +60,8 @@ jobs:
         arch: [ 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' ]
 #        arch: [ 'x86_64' ]
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -129,10 +125,8 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
@@ -189,10 +183,8 @@ jobs:
   ios:
     runs-on: macos-latest
     steps:
-      - name: 'Checkout config'
+      - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'config.json'
       - name: 'read config.json'
         id: config
         uses: ActionsTools/read-json-action@main
