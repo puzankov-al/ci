@@ -42,10 +42,12 @@ jobs:
         shell: bash
         working-directory: source
         run: git apply ../patch/sdl2_ttf.patch
+      - name: 'which ninja'
+        shell: bash
+        run: which ninja
       - name: 'cmake configure'
         shell: bash
         run: |
-          which ninja
           emcmake cmake -S source -B build \
                -DBUILD_SHARED_LIBS=OFF \
                -DSDL2TTF_VENDORED=ON \
