@@ -45,7 +45,7 @@ jobs:
           mkdir build
           mkdir install
           
-          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'
+          for ARCH in 'armeabi-v7a'
           do
             echo "Build for $ARCH"
 
@@ -65,7 +65,10 @@ jobs:
 
             make install_sw DESTDIR=../tmp
           
+            ls -l "${{ github.workspace}}/tmp"
             mv "${{ github.workspace}}/tmp" "${{ github.workspace}}/install/$ARCH"
+            ls -l "${{ github.workspace}}/install"
+            ls -l "${{ github.workspace}}/install/$ARCH"
           done
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
