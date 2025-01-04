@@ -45,7 +45,7 @@ jobs:
           mkdir build
           mkdir install
           
-          for ARCH in 'armeabi-v7a'
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'
           do
             echo "Build for $ARCH"
 
@@ -62,13 +62,9 @@ jobs:
             cd "${{ github.workspace}}/build/$ARCH"
             ../../source/Configure android-$OPENSSL_ARCH -D__ANDROID_API__=29
             make build_sw -j4
-
             make install_sw DESTDIR=../../tmp
 
-            ls -l "${{ github.workspace}}/tmp"
-            mv "${{ github.workspace}}/tmp" "${{ github.workspace}}/install/$ARCH"
-            ls -l "${{ github.workspace}}/install"
-            ls -l "${{ github.workspace}}/install/$ARCH"
+            mv "${{ github.workspace}}/tmp/usr/local" "${{ github.workspace}}/install/$ARCH"
           done
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
