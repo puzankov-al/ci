@@ -25,5 +25,5 @@ jobs:
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'fmt-ios-${{steps.config.outputs.fmt_tag}}'
+          name: 'ios-cmake-${{steps.config.outputs.ios-cmake_tag}}'
           path: '${{ github.workspace}}/source/ios.toolchain.cmake'
