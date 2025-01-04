@@ -1,0 +1,52 @@
+name: 'fmt'
+run-name: 'Build fmt'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'fmtlib/fmt'
+          ref: ${{steps.config.outputs.fmt_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'build'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+                -GNinja \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=install \
+                -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DFMT_DOC=OFF \
+                -DFMT_TEST=OFF
+          cmake --build build --config Release --parallel
+
+          cmake --install build --config Release
+
+          xcodebuild -create-xcframework \
+                               -library install/lib/libfmt.a \
+                               -headers install/include \
+                               -output install/xcframework/fmt.xcframework
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'fmt-macos-${{steps.config.outputs.fmt_tag}}'
+          path: '${{ github.workspace}}/install/xcframework'

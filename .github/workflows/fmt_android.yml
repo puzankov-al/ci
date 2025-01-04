@@ -1,0 +1,56 @@
+name: 'fmt'
+run-name: 'Build fmt'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
+      - name: 'Setup NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27c
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'fmtlib/fmt'
+          ref: ${{steps.config.outputs.fmt_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'build'
+        shell: bash
+        run: |
+          for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'            
+          do
+            echo "Build for $ARCH"
+            cmake -S source -B build/$ARCH \
+                 -GNinja \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DCMAKE_TOOLCHAIN_FILE=${{steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+                 -DCMAKE_INSTALL_PREFIX=install/$ARCH \
+                 -DANDROID_PLATFORM="29" \
+                 -DANDROID_ABI=$ARCH \
+                 -DFMT_DOC=OFF \
+                 -DFMT_TEST=OFF
+            cmake --build build/$ARCH --config Release --parallel
+            cmake --install build/$ARCH --config Release
+          done
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'fmt-android-${{steps.config.outputs.fmt_tag}}'
+          path: '${{ github.workspace}}/install'
