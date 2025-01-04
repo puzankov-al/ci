@@ -1,0 +1,120 @@
+### https://github.com/robertying/openssl-curl-android
+### https://github.com/jasonacox/Build-OpenSSL-cURL
+### https://github.com/leenjewel/openssl_for_ios_and_android
+
+name: 'curl ios'
+run-name: 'Build curl for ios'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup iOS toolchain'
+        uses: actions/checkout@v4
+        with:
+          repository: 'leetal/ios-cmake'
+          ref: '4.5.0'
+          path: 'ios-cmake'
+          sparse-checkout: 'ios.toolchain.cmake'
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'curl/curl'
+          ref: ${{steps.config.outputs.curl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphone" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DENABLE_BITCODE=TRUE \
+                -DPLATFORM=OS64 \
+                -DBUILD_CURL_EXE=OFF \
+                -DCURL_USE_SECTRANSP=ON \
+                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+                -DUSE_NGHTTP2=OFF \
+                -DCURL_USE_LIBSSH2=OFF \
+                -DUSE_LIBIDN2=OFF \
+                -DHTTP_ONLY=ON \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build --config Release
+
+          rm -r build
+
+          cmake -S source -B build \
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphonesimulator64" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DENABLE_BITCODE=TRUE \
+                -DPLATFORM=SIMULATOR64 \
+                -DBUILD_CURL_EXE=OFF \
+                -DCURL_USE_SECTRANSP=ON \
+                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+                -DUSE_NGHTTP2=OFF \
+                -DCURL_USE_LIBSSH2=OFF \
+                -DUSE_LIBIDN2=OFF \
+                -DHTTP_ONLY=ON \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build --config Release
+
+          rm -r build
+
+          cmake -S source -B build \
+                -GXcode \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="install-iphonesimulatorarm64" \
+                -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace}}/ios-cmake/ios.toolchain.cmake' \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -DENABLE_BITCODE=TRUE \
+                -DPLATFORM=SIMULATORARM64 \
+                -DBUILD_CURL_EXE=OFF \
+                -DCURL_USE_SECTRANSP=ON \
+                -DCURL_DEFAULT_SSL_BACKEND='secure-transport' \
+                -DUSE_NGHTTP2=OFF \
+                -DCURL_USE_LIBSSH2=OFF \
+                -DUSE_LIBIDN2=OFF \
+                -DHTTP_ONLY=ON \
+                -DBUILD_STATIC_LIBS=ON \
+                -DBUILD_SHARED_LIBS=OFF
+          cmake --build build --config Release --parallel
+          cmake --install build --config Release
+
+          cp -r 'install-iphonesimulator64' 'install-iphonesimulator'
+
+          lipo \
+            install-iphonesimulator64/lib/libcurl.a \
+            install-iphonesimulatorarm64/lib/libcurl.a \
+            -create -output install-iphonesimulator/lib/libcurl.a
+
+          xcodebuild -create-xcframework \
+            -library install-iphonesimulator/lib/libcurl.a \
+            -headers install-iphonesimulator/include \
+            -library install-iphone/lib/libcurl.a \
+            -headers install-iphone/include \
+            -output install/xcframework/curl.xcframework
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'curl-ios-${{steps.config.outputs.curl_tag}}'
+          path: '${{ github.workspace}}/install/xcframework'
