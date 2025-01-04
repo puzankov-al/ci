@@ -1,0 +1,29 @@
+name: 'ios-cmake'
+run-name: 'Build ios-cmake'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'leetal/ios-cmake'
+          ref: ${{steps.config.outputs.ios-cmake_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'fmt-ios-${{steps.config.outputs.fmt_tag}}'
+          path: '${{ github.workspace}}/source/ios.toolchain.cmake'
