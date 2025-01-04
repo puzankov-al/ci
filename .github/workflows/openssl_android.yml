@@ -48,7 +48,7 @@ jobs:
           for ARCH in 'armeabi-v7a' 'arm64-v8a' 'x86' 'x86_64'
           do
             echo "Build for $ARCH"
-               
+
             OPENSSL_ARCH=$ARCH
             if [[ $OPENSSL_ARCH == "armeabi-v7a" ]]; then
                OPENSSL_ARCH='arm'
@@ -56,17 +56,19 @@ jobs:
                OPENSSL_ARCH='arm64'
             fi
 
-            mkdir build/$ARCH
-            mkdir install/$ARCH
+            mkdir "${{ github.workspace}}/build/$ARCH"
+            mkdir "${{ github.workspace}}/tmp"
 
             cd "${{ github.workspace}}/build/$ARCH"
             ../../source/Configure android-$OPENSSL_ARCH -D__ANDROID_API__=29
             make build_sw -j4
-            
-            make install_sw DESTDIR=../install/$ARCH
+
+            make install_sw DESTDIR=../tmp
+          
+            mv "${{ github.workspace}}/tmp" "${{ github.workspace}}/install/$ARCH"
           done
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
           name: 'openssl-android-${{steps.config.outputs.openssl_tag}}'
-          path: '${{ github.workspace}}/install/usr/local'
+          path: '${{ github.workspace}}/install'
