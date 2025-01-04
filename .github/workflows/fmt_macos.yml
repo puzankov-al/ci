@@ -1,5 +1,5 @@
-name: 'fmt'
-run-name: 'Build fmt'
+name: 'fmt macos'
+run-name: 'Build fmt for macos'
 
 on:
   workflow_dispatch:

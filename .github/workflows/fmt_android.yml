@@ -1,5 +1,5 @@
-name: 'fmt'
-run-name: 'Build fmt'
+name: 'fmt android'
+run-name: 'Build fmt for android'
 
 on:
   workflow_dispatch:

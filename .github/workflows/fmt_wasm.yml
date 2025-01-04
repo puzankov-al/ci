@@ -1,5 +1,5 @@
-name: 'fmt'
-run-name: 'Build fmt'
+name: 'fmt wasm'
+run-name: 'Build fmt for wasm'
 
 on:
   workflow_dispatch:
