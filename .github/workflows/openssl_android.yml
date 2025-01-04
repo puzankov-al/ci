@@ -63,8 +63,8 @@ jobs:
             ../../source/Configure android-$OPENSSL_ARCH -D__ANDROID_API__=29
             make build_sw -j4
 
-            make install_sw DESTDIR=../tmp
-          
+            make install_sw DESTDIR=../../tmp
+
             ls -l "${{ github.workspace}}/tmp"
             mv "${{ github.workspace}}/tmp" "${{ github.workspace}}/install/$ARCH"
             ls -l "${{ github.workspace}}/install"
