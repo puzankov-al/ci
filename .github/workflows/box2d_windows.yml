@@ -1,5 +1,5 @@
-name: 'fmt windows'
-run-name: 'Build fmt for windows'
+name: 'box2d windows'
+run-name: 'Build box2d for windows'
 
 on:
   workflow_dispatch:
@@ -18,8 +18,8 @@ jobs:
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
-          repository: 'fmtlib/fmt'
-          ref: ${{steps.config.outputs.fmt_tag}}
+          repository: 'erincatto/box2d'
+          ref: ${{steps.config.outputs.box2d_tag}}
           fetch-depth: 0
           path: 'source'
       - name: 'cmake configure'
@@ -30,12 +30,16 @@ jobs:
                 -DCMAKE_CXX_STANDARD=20 \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DFMT_DOC=OFF \
-                -DFMT_TEST=OFF
+                -DBOX2D_SAMPLES=OFF \
+                -DBOX2D_BENCHMARKS=OFF \
+                -DBOX2D_DOCS=OFF \
+                -DBOX2D_PROFILE=OFF \
+                -DBOX2D_VALIDATE=OFF \
+                -DBOX2D_UNIT_TESTS=OFF
           cmake --build build --config Release --parallel
           cmake --install build --config Release
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'fmt-windows-${{steps.config.outputs.fmt_tag}}'
+          name: 'box2d-windows-${{steps.config.outputs.box2d_tag}}'
           path: '${{ github.workspace}}/install'
