@@ -50,10 +50,10 @@ jobs:
           cmake --build build --config Release --parallel
           cmake --install build --config Release
           
-#          xcodebuild -create-xcframework \
-#                                         -library install/lib/box2d.lib \
-#                                         -headers install/include \
-#                                         -output install/xcframework/box2d.xcframework
+          xcodebuild -create-xcframework \
+                                         -library install/lib/libbox2d.a \
+                                         -headers install/include \
+                                         -output install/xcframework/box2d.xcframework
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
