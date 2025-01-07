@@ -35,6 +35,7 @@ jobs:
         run: |
           cmake -S source -B build \
                 -DCMAKE_CXX_STANDARD=20 \
+                -DCMAKE_INSTALL_LIBDIR="install/lib" \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DBOX2D_SAMPLES=OFF \
