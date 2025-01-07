@@ -25,7 +25,7 @@ jobs:
       - name: 'Patch'
         shell: bash
         working-directory: source
-        run: git apply --ignore-whitespace ../patch/box2d.patch
+        run: git apply ../patch/box2d.patch
       - name: 'Build'
         shell: bash
         run: |
