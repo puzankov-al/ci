@@ -10,5 +10,5 @@
   "fmt_tag": "11.0.2",
   "concurrentqueue_tag": "v1.0.4",
   "ios-cmake_tag": "4.5.0",
-  "box2d_tag": "master"
+  "box2d_tag": "main"
 }
