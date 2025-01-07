@@ -26,10 +26,10 @@ jobs:
           ref: ${{steps.config.outputs.box2d_tag}}
           fetch-depth: 0
           path: 'source'
-      - name: 'Patch'
-        shell: bash
-        working-directory: source
-        run: git apply ../patch/box2d.patch
+#      - name: 'Patch'
+#        shell: bash
+#        working-directory: source
+#        run: git apply ../patch/box2d.patch
       - name: 'Build'
         shell: bash
         run: |
