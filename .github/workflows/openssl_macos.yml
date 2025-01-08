@@ -1,0 +1,59 @@
+name: 'openssl macos'
+run-name: 'Build openssl for macos'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Setup Perl'
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.38"
+      - name: 'Setup perl dependencies'
+        shell: pwsh
+        run: cpan -f -i Text::Template
+      - name: 'Setup NASM'
+        uses: ilammy/setup-nasm@v1
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'openssl/openssl'
+          ref: ${{steps.config.outputs.openssl_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'build'
+        shell: bash
+        run: |
+          mkdir install
+
+          mkdir -p build/x86_64
+          mkdir -p build/arm64
+          mkdir -p tmp/x86_64
+          mkdir -p tmp/arm64
+
+          cd "${{ github.workspace}}/build/x86_64"
+
+          ../../source/Configure darwin64-x86_64
+          make build_sw -j4
+          make install_sw DESTDIR=../../tmp/x86_64
+          
+          cd "${{ github.workspace}}/build/arm64"
+          
+          ../../source/Configure darwin64-arm64
+          make build_sw -j4
+          make install_sw DESTDIR=../../tmp/arm64
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'openssl-android-${{steps.config.outputs.openssl_tag}}'
+          path: '${{ github.workspace}}/tmp'
