@@ -25,3 +25,16 @@ index dc37b28f..0397eaa0 100644
      )
  
      if(INSTALL_EXTRA_TARGETS)
+diff --git a/SDL2_mixerConfig.cmake.in b/SDL2_mixerConfig.cmake.in
+index 74517129..542fbb4f 100644
+--- a/SDL2_mixerConfig.cmake.in
++++ b/SDL2_mixerConfig.cmake.in
+@@ -56,7 +56,7 @@ endif()
+ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL2_mixer-static-targets.cmake")
+ 
+     include(CMakeFindDependencyMacro)
+-    include(PkgConfigHelper)
++    include("${CMAKE_CURRENT_LIST_DIR}/PkgConfigHelper.cmake")
+ 
+     if(NOT DEFINED CMAKE_FIND_PACKAGE_PREFER_CONFIG)
+         set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
