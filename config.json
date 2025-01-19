@@ -7,7 +7,7 @@
   "openssl_tag": "openssl-3.4.0",
   "curl_tag": "curl-8_11_1",
   "nghttp2_tag": "v1.64.0",
-  "fmt_tag": "11.0.2",
+  "fmt_tag": "11.1.2",
   "concurrentqueue_tag": "v1.0.4",
   "ios-cmake_tag": "4.5.0",
   "box2d_tag": "v3.0.0"
