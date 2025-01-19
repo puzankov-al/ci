@@ -18,7 +18,7 @@ jobs:
       - name: 'Setup Emscripten'
         uses: mymindstorm/setup-emsdk@v14
         with:
-          version: 3.1.62
+          version: 3.1.74
           actions-cache-folder: 'emsdk-cache'
       - name: 'Setup Ninja'
         uses: ashutoshvarma/setup-ninja@master
