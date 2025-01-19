@@ -1,12 +1,12 @@
-name: 'box2d windows'
-run-name: 'Build box2d for windows'
+name: 'box2d macos'
+run-name: 'Build box2d for macos'
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
@@ -15,6 +15,10 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config.json"
+      - name: 'Setup Ninja'
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.12.1
       - name: 'Checkout source'
         uses: actions/checkout@v4
         with:
@@ -22,29 +26,36 @@ jobs:
           ref: ${{steps.config.outputs.box2d_tag}}
           fetch-depth: 0
           path: 'source'
-      - name: 'Patch'
-        shell: bash
-        working-directory: source
-        run: git apply ../patch/box2d.patch
+#      - name: 'Patch'
+#        shell: bash
+#        working-directory: source
+#        run: git apply ../patch/box2d.patch
       - name: 'Build'
         shell: bash
         run: |
           cmake -S source -B build \
-                -A x64 \
                 -DCMAKE_CXX_STANDARD=20 \
+                -DCMAKE_INSTALL_LIBDIR="install/lib" \
                 -DCMAKE_INSTALL_PREFIX=install \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DBUILD_SHARED_LIBS=ON \
                 -DBOX2D_SAMPLES=OFF \
                 -DBOX2D_BENCHMARKS=OFF \
                 -DBOX2D_DOCS=OFF \
                 -DBOX2D_PROFILE=OFF \
                 -DBOX2D_VALIDATE=OFF \
-                -DBOX2D_UNIT_TESTS=OFF
+                -DBOX2D_UNIT_TESTS=OFF \
+                -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                -GNinja
           cmake --build build --config Release --parallel
           cmake --install build --config Release
+          
+          xcodebuild -create-xcframework \
+                                         -library install/lib/libbox2d.a \
+                                         -headers install/include \
+                                         -output install/xcframework/box2d.xcframework
       - name: 'Store source archives'
         uses: actions/upload-artifact@v4
         with:
-          name: 'box2d-windows-${{steps.config.outputs.box2d_tag}}'
+          name: 'box2d-macos-${{steps.config.outputs.box2d_tag}}'
           path: '${{ github.workspace}}/install'
