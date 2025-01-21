@@ -46,16 +46,17 @@ jobs:
         shell: bash
         run: |
           emcmake cmake -S source -B build \
-               -DBUILD_SHARED_LIBS=OFF \
-               -DSDL2TTF_VENDORED=ON \
-               -DSDL2TTF_HARFBUZZ=ON \
-               -DSDL2TTF_SAMPLES=OFF \
-               -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
-               -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
-               -G Ninja
+                  -DBUILD_SHARED_LIBS=OFF \
+                  -DSDL2TTF_VENDORED=ON \
+                  -DSDL2TTF_HARFBUZZ=ON \
+                  -DSDL2TTF_SAMPLES=OFF \
+                  -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+                  -DCMAKE_USE_PTHREADS_INIT=ON \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_INSTALL_PREFIX=install \
+                  -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
+                  -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=NEVER \
+                  -G Ninja
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
