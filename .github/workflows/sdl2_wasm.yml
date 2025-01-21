@@ -35,15 +35,16 @@ jobs:
         shell: bash
         run: |
           emcmake cmake -S source -B build \
-               -DSDL_WERROR=ON \
-               -DSDL_STATIC=ON \
-               -DSDL_TEST=OFF \
-               -DSDL_TESTS=OFF \
-               -DSDL_INSTALL_TESTS=OFF \
-               -DSDL2_DISABLE_INSTALL=OFF \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=Release \
-               -G Ninja
+                  -DSDL_WERROR=ON \
+                  -DSDL_STATIC=ON \
+                  -DSDL_TEST=OFF \
+                  -DSDL_TESTS=OFF \
+                  -DSDL_INSTALL_TESTS=OFF \
+                  -DSDL2_DISABLE_INSTALL=OFF \
+                  -DSDL_PTHREADS=ON \
+                  -DCMAKE_INSTALL_PREFIX=install \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -G Ninja
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
