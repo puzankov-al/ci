@@ -59,7 +59,7 @@ jobs:
                   -G Ninja
       - name: 'cmake build'
         shell: bash
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --config Release --parallel --verbose
       - name: 'cmake install'
         shell: bash
         run: cmake --install build --config Release
