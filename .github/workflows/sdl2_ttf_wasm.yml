@@ -51,7 +51,7 @@ jobs:
                   -DSDL2TTF_HARFBUZZ=ON \
                   -DSDL2TTF_SAMPLES=OFF \
                   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-                  -DCMAKE_C_FLAGS="-pthread" \
+                  -DCMAKE_C_FLAGS="-matomics -mbulk-memory" \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DCMAKE_INSTALL_PREFIX=install \
                   -DCMAKE_PREFIX_PATH='${{ github.workspace }}/sdl/lib/cmake/SDL2' \
