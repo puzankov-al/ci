@@ -3,6 +3,7 @@
   "sdl2_image_tag": "release-2.8.4",
   "sdl2_ttf_tag": "release-2.22.0",
   "sdl2_mixer_tag": "release-2.8.0",
+  "sdl3_tag": "release-3.2.14",
   "threadpool_tag": "v4.1.0",
   "openssl_tag": "openssl-3.4.0",
   "curl_tag": "curl-8_11_1",

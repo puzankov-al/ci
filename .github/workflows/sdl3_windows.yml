@@ -1,0 +1,46 @@
+name: 'sdl3 window'
+run-name: 'Build SDL3 for Window'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+      - name: 'Checkout source'
+        uses: actions/checkout@v4
+        with:
+          repository: 'libsdl-org/SDL'
+          ref: ${{steps.config.outputs.sdl3_tag}}
+          fetch-depth: 0
+          path: 'source'
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+               -A x64 \
+               -DCMAKE_INSTALL_PREFIX=install \
+               -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config RelWithDebInfo --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config RelWithDebInfo
+      - name: 'print'
+        working-directory: '${{ github.workspace}}/install'
+        shell: bash
+        run: ls -l
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'sdl3-windows-${{steps.config.outputs.sdl3_tag}}'
+          path: '${{ github.workspace}}/install'
