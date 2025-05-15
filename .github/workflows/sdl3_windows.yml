@@ -27,8 +27,7 @@ jobs:
         run: |
           cmake -S source -B build \
                -A x64 \
-               -DCMAKE_INSTALL_PREFIX=install \
-               -DCMAKE_BUILD_TYPE=RelWithDebInfo
+               -DCMAKE_INSTALL_PREFIX=install
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config RelWithDebInfo --parallel
