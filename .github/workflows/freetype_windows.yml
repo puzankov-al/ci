@@ -22,10 +22,10 @@ jobs:
           ref: ${{steps.config.outputs.freetype}}
           fetch-depth: 0
           path: 'freetype'
-      - name: 'cmake configure freetype'
+      - name: 'cmake configure'
         shell: bash
         run: |
-          cmake -S freetype -B build_freetype \
+          cmake -S freetype -B build \
                 -A x64 \
                 -DCMAKE_INSTALL_PREFIX=install
       - name: 'cmake build'
