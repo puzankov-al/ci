@@ -15,23 +15,19 @@ jobs:
         uses: ActionsTools/read-json-action@main
         with:
           file_path: "config.json"
-
       - name: 'Checkout freetype'
         uses: actions/checkout@v4
         with:
           repository: 'freetype/freetype'
           ref: ${{steps.config.outputs.freetype}}
           fetch-depth: 0
-          path: 'source'
-          submodules: recursive
-
-      - name: 'cmake configure'
+          path: 'freetype'
+      - name: 'cmake configure freetype'
         shell: bash
         run: |
-          cmake -S source -B build \
+          cmake -S freetype -B build_freetype \
                 -A x64 \
-                -DCMAKE_INSTALL_PREFIX=install \
-                -DFT_REQUIRE_HARFBUZZ=ON
+                -DCMAKE_INSTALL_PREFIX=install
       - name: 'cmake build'
         shell: bash
         run: cmake --build build --config Release --parallel
