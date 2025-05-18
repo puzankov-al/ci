@@ -1,0 +1,49 @@
+name: 'freetype window'
+run-name: 'Build freetype for Window'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2025
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'read config.json'
+        id: config
+        uses: ActionsTools/read-json-action@main
+        with:
+          file_path: "config.json"
+
+      - name: 'Checkout freetype'
+        uses: actions/checkout@v4
+        with:
+          repository: 'freetype/freetype'
+          ref: ${{steps.config.outputs.freetype}}
+          fetch-depth: 0
+          path: 'source'
+          submodules: recursive
+
+      - name: 'cmake configure'
+        shell: bash
+        run: |
+          cmake -S source -B build \
+                -A x64 \
+                -DCMAKE_INSTALL_PREFIX=install \
+                -DFT_REQUIRE_HARFBUZZ=ON
+      - name: 'cmake build'
+        shell: bash
+        run: cmake --build build --config Release --parallel
+      - name: 'cmake install'
+        shell: bash
+        run: cmake --install build --config Release
+      - name: 'print'
+        working-directory: '${{ github.workspace}}/install'
+        shell: bash
+        run: ls -l
+      - name: 'Store source archives'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'freetype-windows-${{steps.config.outputs.freetype}}-${{github.run_number}}'
+          path: '${{ github.workspace}}/install'

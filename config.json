@@ -11,5 +11,10 @@
   "fmt_tag": "11.1.2",
   "concurrentqueue_tag": "v1.0.4",
   "ios-cmake_tag": "4.5.0",
-  "box2d_tag": "main"
+  "box2d_tag": "main",
+  "bx": "d4096a84464605e8fb11e5ffa2d851e42eecffb3",
+  "bimg": "446b9eb11130821fd11607c2fc94aee80976e56a",
+  "bgfx": "9dc992147a7fd5cd53b3c54f233fc7dfba5fca2b",
+  "bgfx.cmake": "v1.129.8866-492",
+  "freetype": "VER-2-13-3"
 }

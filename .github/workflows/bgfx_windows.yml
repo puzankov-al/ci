@@ -1,0 +1,61 @@
+#name: 'bgfx window'
+#run-name: 'Build bgfx for Window'
+#
+#on:
+#  workflow_dispatch:
+#
+#jobs:
+#  build:
+#    runs-on: windows-2025
+#    steps:
+#      - name: 'Checkout'
+#        uses: actions/checkout@v4
+#      - name: 'read config.json'
+#        id: config
+#        uses: ActionsTools/read-json-action@main
+#        with:
+#          file_path: "config.json"
+#      - name: 'Checkout bx'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'bkaradzic/bx'
+#          ref: ${{steps.config.outputs.bx}}
+#          fetch-depth: 0
+#          path: 'bx'
+#      - name: 'Checkout bimg'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'bkaradzic/bimg'
+#          ref: ${{steps.config.outputs.bimg}}
+#          fetch-depth: 0
+#          path: 'bimg'
+#      - name: 'Checkout bgfx'
+#        uses: actions/checkout@v4
+#        with:
+#          repository: 'bkaradzic/bgfx'
+#          ref: ${{steps.config.outputs.bgfx}}
+#          fetch-depth: 0
+#          path: 'bgfx'
+#
+#      - name: 'cmake configure'
+#        shell: bash
+#        run: |
+#          cmake -S source -B build \
+#                -A x64 \
+#                -DCMAKE_INSTALL_PREFIX=install \
+#                -DSDL_TEST_LIBRARY=OFF
+#      - name: 'cmake build'
+#        shell: bash
+#        run: cmake --build build --config RelWithDebInfo --parallel
+#      - name: 'cmake install'
+#        shell: bash
+#        run: cmake --install build --config RelWithDebInfo
+#      - name: 'print'
+#        working-directory: '${{ github.workspace}}/install'
+#        shell: bash
+#        run: ls -l
+#      - name: 'Store source archives'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: 'bgfx-windows-master-${{github.run_number}}'
+#          path: '${{ github.workspace}}/install'
